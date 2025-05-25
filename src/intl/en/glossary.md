@@ -75,7 +75,33 @@
 * := method / 
   * 👀's goal
     * achieve distributed [consensus](#consensus)👀
-  * if user wants to participate | validation of transactions -> asked to prove ownership of certain amount of cryptocurrency (== stake | network) 
+  * if user wants to participate | validation of transactions -> asked to prove ownership of certain amount of cryptocurrency (== stake | network)
+
+# Rollups
+* == type of layer 2 scaling solution /
+  * steps
+    * batches MULTIPLE transactions
+    * submits them -- as -- 1! transaction | Mainet
+  * allows
+    * reduce gas costs
+    * increase transaction throughput
+  * use
+    * [sidechains](#sidechain) + Mainnet
+* types
+  * Optimistic rollups
+  * Zero-knowledge rollups 
+
+# Shard / shard chain
+* Shard chains
+  * == total blockchain's discrete sections / subsets of validators can be responsible for
+  * goal
+    * 👀way / Ethereum -- scaled to -- millions of transactions / second👀 
+      * NOWADAYS, superseded -- by -- rollups
+
+# Sidechain
+* scaling solution / 👀SEPARATE chains👀 -- with -- DIFFERENT consensus rules
+  * bridge
+    * connect these sidechains -- to -- Mainnet
 
 # Validator
 * == node | [proof-of-stake](#proof-of-stake-pos) system /
@@ -382,8 +408,7 @@
   "reward-definition": "An amount of ether <a href=\"/developers/docs/consensus-mechanisms/pos/rewards-and-penalties\">awarded to validators</a> that perform certain functions, including proposing a block or participating in a sync-committee, in each slot.",
   "rlp-term": "Recursive Length Prefix (RLP)",
   "rlp-definition": "An <a href=\"/developers/docs/data-structures-and-encoding\">encoding standard</a> designed by the Ethereum developers to encode and serialize objects (data structures) of arbitrary complexity and length.",
-  "rollups-term": "Rollups",
-  "rollups-definition": "A type of <a href=\"/glossary/#layer-2\">layer 2</a> scaling solution that batches multiple transactions and submits them to <a href=\"/glossary/#mainnet\">the Ethereum main chain</a> in a single transaction. This allows for reductions in <a href=\"/glossary/#gas\">gas</a> costs and increases in <a href=\"/glossary/#transaction\">transaction</a> throughput. There are Optimistic and Zero-knowledge rollups which use different security methods to offer these scalability gains. <a href=\"/developers/docs/scaling/#rollups\">More on rollups</a>.",
+
   "rpc-term": "Remote procedure call (RPC)",
   "rpc-definition": "RPC lets one computer request data or action from another over a network, like asking for info with a remote control.",
   "sha-term": "Secure Hash Algorithm (SHA)",
@@ -392,10 +417,8 @@
   "serialization-definition": "The process of converting a data structure into a sequence of bytes.",
   "sequencer-term": "Sequencer",
   "sequencer-definition": "A sequencer is a program responsible for ordering transactions in a blockchain network, particularly within Layer 2 scaling solutions.",
-  "shard-term": "Shard / shard chain",
-  "shard-definition": "Shard chains are discrete sections of the total blockchain that subsets of validators can be responsible for. This was originally intended to be the way that Ethereum scaled to millions of transactions per second, but it has now been superseded by the rapid development of scaling using <a href=\"/glossary/#rollups\">rollups</a>.",
-  "sidechain-term": "Sidechain",
-  "sidechain-definition": "A scaling solution that uses a separate chain with different, often faster, <a href=\"/glossary/#consensus-rules\">consensus rules</a>. A bridge is needed to connect these sidechains to <a href=\"/glossary/#mainnet\">Mainnet</a>. <a href=\"/glossary/#rollups\">Rollups</a> also use sidechains, but they operate in collaboration with <a href=\"/glossary/#mainnet\">Mainnet</a> instead. <a href=\"/developers/docs/scaling/sidechains/\">More on sidechains</a>.",
+
+
   "signing-term": "Signing",
   "signing-definition": "Demonstrating cryptographically that a transaction was approved by the holder of a specific private key.",
   "singleton-term": "Singleton",
