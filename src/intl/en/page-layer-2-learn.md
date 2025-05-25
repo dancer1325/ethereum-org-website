@@ -62,6 +62,7 @@ https://ethereum.org/en/layer-2/learn/
       * NOT properly battle tested
     * [L2BEAT](https://l2beat.com/scaling/summary)
       * comprehensive risk assessment framework / EACH project
+    * [growthepie.xyz](https://www.growthepie.xyz/)
 
 * Rollups
   * Rollups bundle 
