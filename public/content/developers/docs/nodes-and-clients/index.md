@@ -5,45 +5,82 @@ lang: en
 sidebarDepth: 2
 ---
 
-Ethereum is a distributed network of computers (known as nodes) running software that can verify blocks and transaction data. The software must be run on your computer to turn it into an Ethereum node. There are two separate pieces of software (known as 'clients') required to form a node.
-
-## Prerequisites {#prerequisites}
-
-You should understand the concept of a peer-to-peer network and the [basics of the EVM](/developers/docs/evm/) before diving deeper and running your own instance of an Ethereum client. Take a look at our [introduction to Ethereum](/developers/docs/intro-to-ethereum/).
-
-If you're new to the topic of nodes, we recommend first checking out our user-friendly introduction on [running an Ethereum node](/run-a-node).
+* Ethereum
+  * 💡== distributed network of computers (nodes) / run software 💡/
+    * can 
+      * verify blocks & transaction data
+    * == if your computer run this software -> your computer == Ethereum node
+    * 👀software == 2 separate pieces (known as 'clients')👀
 
 ## What are nodes and clients? {#what-are-nodes-and-clients}
 
-A "node" is any instance of Ethereum client software that is connected to other computers also running Ethereum software, forming a network. A client is an implementation of Ethereum that verifies data against the protocol rules and keeps the network secure. A node has to run two clients: a consensus client and an execution client.
+* network
+  * == set of nodes / connected
+* "node"
+  * == Ethereum client software's instance / connected -- to -- OTHER computers / ALSO run Ethereum software
+  * requirements
+    * 👀run 2 clients👀/
+      * work together -- to --
+        * keep track of the Ethereum chain's head
+        * enable users -- to interact with the -- Ethereum network
+      * are
+        * consensus client
+        * execution client 
+      * have [encapsulated complexity](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
+      * 💡made easier 💡
+        * execute [The Merge](/ethereum-org-website/public/content/roadmap/merge) 
+        * makes client software easier to maintain & develop
+        * reuse of individual clients
+          * _Example:_ | [layer 2 ecosystem](/layer-2/)
 
-- The execution client (also known as the Execution Engine, EL client or formerly the Eth1 client) listens to new transactions broadcasted in the network, executes them in EVM, and holds the latest state and database of all current Ethereum data.
-- The consensus client (also known as the Beacon Node, CL client or formerly the Eth2 client) implements the proof-of-stake consensus algorithm, which enables the network to achieve agreement based on validated data from the execution client. There is also a third piece of software, known as a 'validator' that can be added to the consensus client, allowing a node to participate in securing the network.
+* client
+  * == implementation of Ethereum / 
+    * verifies data -- against the -- protocol rules
+    * keeps the network secure
 
-These clients work together to keep track of the head of the Ethereum chain and allow users to interact with the Ethereum network. The modular design with multiple pieces of software working together is called [encapsulated complexity](https://vitalik.eth.limo/general/2022/02/28/complexity.html). This approach made it easier to execute [The Merge](/roadmap/merge) seamlessly, makes client software easier to maintain and develop, and enables the reuse of individual clients, for example, in the [layer 2 ecosystem](/layer-2/).
+* execution client  
+  * or Execution Engine or EL client or Eth1 client
+  * in charge of
+    * listening to NEW transactions broadcasted | network,
+    * executing transactions | EVM,
+    * holds of ALL current Ethereum data
+      * the latest state
+      * the latest database 
+
+* consensus client
+  * or Beacon Node or CL client or Eth2 client
+  * 👀implements the proof-of-stake consensus algorithm👀 
+    * -> network can achieve agreement -- based on -- validated data -- from the -- execution client
+
+* 'validator'
+  * ⚠️3th piece of software⚠️
+  * 👀can be added | consensus client👀
+  * enable
+    * node can participate -- to -- secure the network
 
 ![Coupled execution and consensus clients](./eth1eth2client.png)
-Simplified diagram of a coupled execution and consensus client.
 
 ### Client diversity {#client-diversity}
 
-Both [execution clients](/developers/docs/nodes-and-clients/#execution-clients) and [consensus clients](/developers/docs/nodes-and-clients/#consensus-clients) exist in a variety of programming languages developed by different teams.
+* WIDE diversity 
+  * -- for -- 
+    * [execution clients](./client-diversity/index.md#execution-clients-execution-clients) & 
+    * [consensus clients](./client-diversity/index.md#consensus-clients-consensus-clients)
+  * / 
+    * EACH one -- focused on -- DIFFERENT features & user audiences
+      * Reason: 🧠NO client dominating🧠
+    * 👀ALL follow the specifications 👀
+      - [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
+      - [Execution specs](https://github.com/ethereum/execution-specs/)
+      - [Consensus specs](https://github.com/ethereum/consensus-specs)
+      - [EIPs](https://eips.ethereum.org/) implemented -- through -- [network upgrades](/ethereum-org-website/public/content/history/)
 
-Multiple client implementations can make the network stronger by reducing its dependency on a single codebase. The ideal goal is to achieve diversity without any client dominating the network, thereby eliminating a potential single point of failure.
-The variety of languages also invites a broader developer community and allows them to create integrations in their preferred language.
+* [client diversity](client-diversity/)
 
-Learn more about [client diversity](/developers/docs/nodes-and-clients/client-diversity/).
+### Tracking nodes | network {#network-overview}
 
-What these implementations have in common is they all follow a single specification. Specifications dictate how the Ethereum network and blockchain functions. Every technical detail is defined and specifications can be found as:
-
-- Originally, the [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
-- [Execution specs](https://github.com/ethereum/execution-specs/)
-- [Consensus specs](https://github.com/ethereum/consensus-specs)
-- [EIPs](https://eips.ethereum.org/) implemented in various [network upgrades](/history/)
-
-### Tracking nodes in the network {#network-overview}
-
-Multiple trackers offer a real-time overview of nodes in the Ethereum network. Note that due to the nature of decentralized networks, these crawlers can only provide a limited view of the network and might report different results.
+* TODO: Multiple trackers offer a real-time overview of nodes in the Ethereum network
+* Note that due to the nature of decentralized networks, these crawlers can only provide a limited view of the network and might report different results.
 
 - [Map of nodes](https://etherscan.io/nodetracker) by Etherscan
 - [Ethernodes](https://ethernodes.org/) by Bitfly
@@ -52,11 +89,18 @@ Multiple trackers offer a real-time overview of nodes in the Ethereum network. N
 
 ## Node types {#node-types}
 
-If you want to [run your own node](/developers/docs/nodes-and-clients/run-a-node/), you should understand that there are different types of node that consume data differently. In fact, clients can run three different types of nodes: light, full and archive. There are also options of different sync strategies which enable faster synchronization time. Synchronization refers to how quickly it can get the most up-to-date information on Ethereum's state.
+If you want to [run your own node](/developers/docs/nodes-and-clients/run-a-node/), you should understand that there are different types of node that consume data differently
+* In fact, clients can run three different types of nodes: light, full and archive
+* There are also options of different sync strategies which enable faster synchronization time
+* Synchronization refers to how quickly it can get the most up-to-date information on Ethereum's state.
 
 ### Full node {#full-node}
 
-Full nodes do a block-by-block validation of the blockchain, including downloading and verifying the block body and state data for each block. There are different classes of full node - some start from the genesis block and verify every single block in the entire history of the blockchain. Others start their verification at a more recent block that they trust to be valid (e.g. Geth's 'snap sync'). Regardless of where the verification starts, full nodes only keep a local copy of relatively recent data (typically the most recent 128 blocks), allowing older data to be deleted to save disk space. Older data can be regenerated when it is needed.
+Full nodes do a block-by-block validation of the blockchain, including downloading and verifying the block body and state data for each block
+* There are different classes of full node - some start from the genesis block and verify every single block in the entire history of the blockchain
+* Others start their verification at a more recent block that they trust to be valid (e.g. Geth's 'snap sync')
+* Regardless of where the verification starts, full nodes only keep a local copy of relatively recent data (typically the most recent 128 blocks), allowing older data to be deleted to save disk space
+* Older data can be regenerated when it is needed.
 
 - Stores full blockchain data (although this is periodically pruned so a full node does not store all state data back to genesis)
 - Participates in block validation, verifies all blocks and states.
@@ -67,21 +111,31 @@ Full nodes do a block-by-block validation of the blockchain, including downloadi
 
 Archive nodes are full nodes that verify every block from genesis and never delete any of the downloaded data.
 
-- Stores everything kept in the full node and builds an archive of historical states. It is needed if you want to query something like an account balance at block #4,000,000, or simply and reliably test your own transactions set without mining them using tracing.
+- Stores everything kept in the full node and builds an archive of historical states
+* It is needed if you want to query something like an account balance at block #4,000,000, or simply and reliably test your own transactions set without mining them using tracing.
 - This data represents units of terabytes, which makes archive nodes less attractive for average users but can be handy for services like block explorers, wallet vendors, and chain analytics.
 
-Syncing clients in any mode other than archive will result in pruned blockchain data. This means, there is no archive of all historical states but the full node is able to build them on demand.
+Syncing clients in any mode other than archive will result in pruned blockchain data
+* This means, there is no archive of all historical states but the full node is able to build them on demand.
 
 Learn more about [Archive nodes](/developers/docs/nodes-and-clients/archive-nodes).
 
 ### Light node {#light-node}
 
-Instead of downloading every block, light nodes only download block headers. These headers contain summary information about the contents of the blocks. Any other information the light node requires gets requested from a full node. The light node can then independently verify the data they receive against the state roots in the block headers. Light nodes enable users to participate in the Ethereum network without the powerful hardware or high bandwidth required to run full nodes. Eventually, light nodes might run on mobile phones or embedded devices. The light nodes do not participate in consensus (i.e. they cannot be miners/validators), but they can access the Ethereum blockchain with the same functionality and security guarantees as a full node.
+Instead of downloading every block, light nodes only download block headers
+* These headers contain summary information about the contents of the blocks
+* Any other information the light node requires gets requested from a full node
+* The light node can then independently verify the data they receive against the state roots in the block headers
+* Light nodes enable users to participate in the Ethereum network without the powerful hardware or high bandwidth required to run full nodes
+* Eventually, light nodes might run on mobile phones or embedded devices
+* The light nodes do not participate in consensus (i.e. they cannot be miners/validators), but they can access the Ethereum blockchain with the same functionality and security guarantees as a full node.
 
 Light clients are an area of active development for Ethereum and we expect to see new light clients for the consensus layer and execution layer soon.
-There are also potential routes to providing light client data over the [gossip network](https://www.ethportal.net/). This is advantageous because the gossip network could support a network of light nodes without requiring full nodes to serve requests.
+There are also potential routes to providing light client data over the [gossip network](https://www.ethportal.net/)
+* This is advantageous because the gossip network could support a network of light nodes without requiring full nodes to serve requests.
 
-Ethereum does not support a large population of light nodes yet, but light node support is an area expected to develop rapidly in the near future. In particular, clients like [Nimbus](https://nimbus.team/), [Helios](https://github.com/a16z/helios), and [LodeStar](https://lodestar.chainsafe.io/) are currently heavily focused on light nodes.
+Ethereum does not support a large population of light nodes yet, but light node support is an area expected to develop rapidly in the near future
+* In particular, clients like [Nimbus](https://nimbus.team/), [Helios](https://github.com/a16z/helios), and [LodeStar](https://lodestar.chainsafe.io/) are currently heavily focused on light nodes.
 
 ## Why should I run an Ethereum node? {#why-should-i-run-an-ethereum-node}
 
@@ -89,7 +143,9 @@ Running a node allows you to directly, trustlessly and privately use Ethereum wh
 
 ### Benefits to you {#benefits-to-you}
 
-Running your own node enables you to use Ethereum in a private, self-sufficient and trustless manner. You don't need to trust the network because you can verify the data yourself with your client. "Don't trust, verify" is a popular blockchain mantra.
+Running your own node enables you to use Ethereum in a private, self-sufficient and trustless manner
+* You don't need to trust the network because you can verify the data yourself with your client
+* "Don't trust, verify" is a popular blockchain mantra.
 
 - Your node verifies all the transactions and blocks against consensus rules by itself. This means you don’t have to rely on any other nodes in the network or fully trust them.
 - You can use an Ethereum wallet with your own node. You can use dapps more securely and privately because you won't have to leak your addresses and balances to intermediaries. Everything can be checked with your own client. [MetaMask](https://metamask.io), [Frame](https://frame.sh/), and [many other wallets](/wallets/find-wallet/) offer RPC-importing, allowing them to use your node.
@@ -121,7 +177,8 @@ If you're more of a technical user, dive into more details and options on how to
 
 ## Alternatives {#alternatives}
 
-Setting up your own node can cost you time and resources but you don’t always need to run your own instance. In this case, you can use a third party API provider. For an overview of using these services, check out [nodes as a service](/developers/docs/nodes-and-clients/nodes-as-a-service/).
+Setting up your own node can cost you time and resources but you don’t always need to run your own instance. In this case, you can use a third party API provider
+* For an overview of using these services, check out [nodes as a service](/developers/docs/nodes-and-clients/nodes-as-a-service/).
 
 If somebody runs an Ethereum node with a public API in your community, you can point your wallets to a community node via Custom RPC and gain more privacy than with some random trusted third party.
 
@@ -129,9 +186,11 @@ On the other hand, if you run a client, you can share it with your friends who m
 
 ## Execution clients {#execution-clients}
 
-The Ethereum community maintains multiple open-source execution clients (previously known as 'Eth1 clients', or just 'Ethereum clients'), developed by different teams using different programming languages. This makes the network stronger and more [diverse](/developers/docs/nodes-and-clients/client-diversity/). The ideal goal is to achieve diversity without any client dominating to reduce any single points of failure.
-
-This table summarizes the different clients. All of them pass [client tests](https://github.com/ethereum/tests) and are actively maintained to stay updated with network upgrades.
+* maintained -- by -- Ethereum community
+* PREVIOUSLY known -- as -- 'Eth1 clients'
+* clients /
+  * pass [client tests](https://github.com/ethereum/tests)
+  * ACTIVELY maintained
 
 | Client                                                                   | Language   | Operating systems     | Networks                  | Sync strategies                                                | State pruning   |
 | ------------------------------------------------------------------------ | ---------- | --------------------- | ------------------------- | -------------------------------------------------------------- | --------------- |
@@ -141,10 +200,6 @@ This table summarizes the different clients. All of them pass [client tests](htt
 | [Erigon](https://github.com/ledgerwatch/erigon)                          | Go         | Linux, Windows, macOS | Mainnet, Sepolia, Holesky | [Full](#full-sync)                                             | Archive, Pruned |
 | [Reth](https://reth.rs/)                                                 | Rust       | Linux, Windows, macOS | Mainnet, Sepolia, Holesky | [Full](#full-sync)                                             | Archive, Pruned |
 | [EthereumJS](https://github.com/ethereumjs/ethereumjs-monorepo) _(beta)_ | TypeScript | Linux, Windows, macOS | Sepolia, Holesky          | [Full](#full-sync)                                             | Pruned          |
-
-For more on supported networks, read up on [Ethereum networks](/developers/docs/networks/).
-
-Each client has unique use cases and advantages, so you should choose one based on your own preferences. Diversity allows implementations to be focused on different features and user audiences. You may want to choose a client based on features, support, programming language, or licences.
 
 ### Besu {#besu}
 
