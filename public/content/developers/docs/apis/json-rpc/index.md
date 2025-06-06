@@ -4,35 +4,59 @@ description: A stateless, light-weight remote procedure call (RPC) protocol for 
 lang: en
 ---
 
-In order for a software application to interact with the Ethereum blockchain - either by reading blockchain data or sending transactions to the network - it must connect to an Ethereum node.
+* 👀software application can interact -- with the -- Ethereum blockchain👀
+  * uses
+    * reading blockchain data
+    * sending transactions -- to the -- network
+  * requirements
+    * ⚠️connect -- to -- an Ethereum node⚠️
+  * -> 💡ALL [Ethereum client](/developers/docs/nodes-and-clients/#execution-clients) -- implements -- a [JSON-RPC specification](https://github.com/ethereum/execution-apis)💡
 
-For this purpose, every [Ethereum client](/developers/docs/nodes-and-clients/#execution-clients) implements a [JSON-RPC specification](https://github.com/ethereum/execution-apis), so there is a uniform set of methods that applications can rely on regardless of the specific node or client implementation.
-
-[JSON-RPC](https://www.jsonrpc.org/specification) is a stateless, light-weight remote procedure call (RPC) protocol. It defines several data structures and the rules around their processing. It is transport agnostic in that the concepts can be used within the same process, over sockets, over HTTP, or in many various message passing environments. It uses JSON (RFC 4627) as data format.
+* [JSON-RPC](https://www.jsonrpc.org/specification)
+  * == RPC protocol /
+    * stateless,
+    * light-weight
+    * transport agnostic
+      * == concepts can be used 
+        * | SAME process, 
+        * -- over -- 
+          * sockets
+          * HTTP
+          * message passing environments
+    * [JSON format](https://datatracker.ietf.org/doc/html/rfc4627.html)
 
 ## Client implementations {#client-implementations}
 
-Ethereum clients each may utilize different programming languages when implementing the JSON-RPC specification. See individual [client documentation](/developers/docs/nodes-and-clients/#execution-clients) for further details related to specific programming languages. We recommend checking the documentation of each client for the latest API support information.
+* TODO:Ethereum clients each may utilize different programming languages when implementing the JSON-RPC specification
+* See individual [client documentation](/developers/docs/nodes-and-clients/#execution-clients) for further details related to specific programming languages
+* We recommend checking the documentation of each client for the latest API support information.
 
 ## Convenience Libraries {#convenience-libraries}
 
-While you may choose to interact directly with Ethereum clients via the JSON-RPC API, there are often easier options for dapp developers. Many [JavaScript](/developers/docs/apis/javascript/#available-libraries) and [backend API](/developers/docs/apis/backend/#available-libraries) libraries exist to provide wrappers on top of the JSON-RPC API. With these libraries, developers can write intuitive, one-line methods in the programming language of their choice to initialize JSON-RPC requests (under the hood) that interact with Ethereum.
+While you may choose to interact directly with Ethereum clients via the JSON-RPC API, there are often easier options for dapp developers
+* Many [JavaScript](/developers/docs/apis/javascript/#available-libraries) and [backend API](/developers/docs/apis/backend/#available-libraries) libraries exist to provide wrappers on top of the JSON-RPC API
+* With these libraries, developers can write intuitive, one-line methods in the programming language of their choice to initialize JSON-RPC requests (under the hood) that interact with Ethereum.
 
 ## Consensus client APIs {#consensus-clients}
 
-This page deals mainly with the JSON-RPC API used by Ethereum execution clients. However, consensus clients also have an RPC API that allows users to query information about the node, request Beacon blocks, Beacon state, and other consensus-related information directly from a node. This API is documented on the [Beacon API webpage](https://ethereum.github.io/beacon-APIs/#/).
+This page deals mainly with the JSON-RPC API used by Ethereum execution clients
+* However, consensus clients also have an RPC API that allows users to query information about the node, request Beacon blocks, Beacon state, and other consensus-related information directly from a node
+* This API is documented on the [Beacon API webpage](https://ethereum.github.io/beacon-APIs/#/).
 
-An internal API is also used for inter-client communication within a node - that is, it enables the consensus client and execution client to swap data. This is called the 'Engine API' and the specs are available on [GitHub](https://github.com/ethereum/execution-apis/blob/main/src/engine/common.md).
+An internal API is also used for inter-client communication within a node - that is, it enables the consensus client and execution client to swap data
+* This is called the 'Engine API' and the specs are available on [GitHub](https://github.com/ethereum/execution-apis/blob/main/src/engine/common.md).
 
 ## Execution client spec {#spec}
 
-[Read the full JSON-RPC API spec on GitHub](https://github.com/ethereum/execution-apis). This API is documented on the [Execution API webpage](https://ethereum.github.io/execution-apis/api-documentation/) and includes an Inspector to try out all the available methods.
+[Read the full JSON-RPC API spec on GitHub](https://github.com/ethereum/execution-apis)
+* This API is documented on the [Execution API webpage](https://ethereum.github.io/execution-apis/api-documentation/) and includes an Inspector to try out all the available methods.
 
 ## Conventions {#conventions}
 
 ### Hex value encoding {#hex-encoding}
 
-Two key data types get passed over JSON: unformatted byte arrays and quantities. Both are passed with a hex encoding but with different requirements for formatting.
+Two key data types get passed over JSON: unformatted byte arrays and quantities
+* Both are passed with a hex encoding but with different requirements for formatting.
 
 #### Quantities {#quantities-encoding}
 
@@ -81,14 +105,21 @@ The following options are possible for the defaultBlock parameter:
 
 ## Examples
 
-On this page we provide examples of how to use individual JSON_RPC API endpoints using the command line tool, [curl](https://curl.se). These individual endpoint examples are found below in the [Curl examples](#curl-examples) section. Further down the page, we also provide an [end-to-end example](#usage-example) for compiling and deploying a smart contract using a Geth node, the JSON_RPC API and curl.
+On this page we provide examples of how to use individual JSON_RPC API endpoints using the command line tool, [curl](https://curl.se)
+* These individual endpoint examples are found below in the [Curl examples](#curl-examples) section
+* Further down the page, we also provide an [end-to-end example](#usage-example) for compiling and deploying a smart contract using a Geth node, the JSON_RPC API and curl.
 
 ## Curl examples {#curl-examples}
 
-Examples of using the JSON_RPC API by making [curl](https://curl.se) requests to an Ethereum node are provided below. Each example
+Examples of using the JSON_RPC API by making [curl](https://curl.se) requests to an Ethereum node are provided below
+* Each example
 includes a description of the specific endpoint, its parameters, return type, and a worked example of how it should be used.
 
-The curl requests might return an error message relating to the content type. This is because the `--data` option sets the content type to `application/x-www-form-urlencoded`. If your node does complain about this, manually set the header by placing `-H "Content-Type: application/json"` at the start of the call. The examples also do not include the URL/IP & port combination which must be the last argument given to curl (e.g. `127.0.0.1:8545`). A complete curl request including these additional data takes the following form:
+The curl requests might return an error message relating to the content type
+* This is because the `--data` option sets the content type to `application/x-www-form-urlencoded`
+* If your node does complain about this, manually set the header by placing `-H "Content-Type: application/json"` at the start of the call
+* The examples also do not include the URL/IP & port combination which must be the last argument given to curl (e.g. `127.0.0.1:8545`)
+* A complete curl request including these additional data takes the following form:
 
 ```shell
 curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}' 127.0.0.1:8545
@@ -96,18 +127,21 @@ curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","metho
 
 ## Gossip, State, History {#gossip-state-history}
 
-A handful of core JSON-RPC methods require data from the Ethereum network, and fall neatly into three main categories: _Gossip, State, and History_. Use the links in these sections to jump to each method, or use the table of contents to explore the whole list of methods.
+A handful of core JSON-RPC methods require data from the Ethereum network, and fall neatly into three main categories: _Gossip, State, and History_
+* Use the links in these sections to jump to each method, or use the table of contents to explore the whole list of methods.
 
 ### Gossip Methods {#gossip-methods}
 
-> These methods track the head of the chain. This is how transactions make their way around the network, find their way into blocks, and how clients find out about new blocks.
+> These methods track the head of the chain
+* This is how transactions make their way around the network, find their way into blocks, and how clients find out about new blocks.
 
 - [eth_blockNumber](#eth_blocknumber)
 - [eth_sendRawTransaction](#eth_sendrawtransaction)
 
 ### State Methods {#state_methods}
 
-> Methods that report the current state of all the data stored. The "state" is like one big shared piece of RAM, and includes account balances, contract data, and gas estimations.
+> Methods that report the current state of all the data stored
+* The "state" is like one big shared piece of RAM, and includes account balances, contract data, and gas estimations.
 
 - [eth_getBalance](#eth_getbalance)
 - [eth_getStorageAt](#eth_getstorageat)
@@ -118,7 +152,8 @@ A handful of core JSON-RPC methods require data from the Ethereum network, and f
 
 ### History Methods {#history_methods}
 
-> Fetches historical records of every block back to genesis. This is like one large append-only file, and includes all block headers, block bodies, uncle blocks, and transaction receipts.
+> Fetches historical records of every block back to genesis
+* This is like one large append-only file, and includes all block headers, block bodies, uncle blocks, and transaction receipts.
 
 - [eth_getBlockTransactionCountByHash](#eth_getblocktransactioncountbyhash)
 - [eth_getBlockTransactionCountByNumber](#eth_getblocktransactioncountbynumber)
@@ -135,7 +170,8 @@ A handful of core JSON-RPC methods require data from the Ethereum network, and f
 
 ## JSON-RPC API Playground
 
-You can use the [playground tool](https://ethereum-json-rpc.com) to discover and try out the API methods. It also shows you which methods and networks are supported by various node providers.
+You can use the [playground tool](https://ethereum-json-rpc.com) to discover and try out the API methods
+* It also shows you which methods and networks are supported by various node providers.
 
 ## JSON-RPC API Methods {#json-rpc-methods}
 
@@ -205,7 +241,8 @@ None
 
 `String` - The current network id.
 
-The full list of current network IDs is available at [chainlist.org](https://chainlist.org). Some common ones are:
+The full list of current network IDs is available at [chainlist.org](https://chainlist.org)
+* Some common ones are:
 
 - `1`: Ethereum Mainnet
 - `11155111`: Sepolia testnet
@@ -276,7 +313,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":
 
 ### eth_protocolVersion {#eth_protocolversion}
 
-Returns the current Ethereum protocol version. Note that this method is [not available in Geth](https://github.com/ethereum/go-ethereum/pull/22064#issuecomment-788682924).
+Returns the current Ethereum protocol version
+* Note that this method is [not available in Geth](https://github.com/ethereum/go-ethereum/pull/22064#issuecomment-788682924).
 
 **Parameters**
 
@@ -309,7 +347,8 @@ None
 
 **Returns**
 
-The precise return data varies between client implementations. All clients return `False` when the node is not syncing, and all clients return the following fields.
+The precise return data varies between client implementations
+* All clients return `False` when the node is not syncing, and all clients return the following fields.
 
 `Object|Boolean`, An object with sync status data or `FALSE`, when not syncing:
 
@@ -317,7 +356,8 @@ The precise return data varies between client implementations. All clients retur
 - `currentBlock`: `QUANTITY` - The current block, same as eth_blockNumber
 - `highestBlock`: `QUANTITY` - The estimated highest block
 
-However, the individual clients may also provide additional data. For example Geth returns the following:
+However, the individual clients may also provide additional data
+* For example Geth returns the following:
 
 ```json
 {
@@ -387,7 +427,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}
 
 Returns the client coinbase address.
 
-> **Note:** This method has been deprecated as of **v1.14.0** and is no longer supported. Attempting to use this method will result in a "Method not supported" error.
+> **Note:** This method has been deprecated as of **v1.14.0** and is no longer supported
+* Attempting to use this method will result in a "Method not supported" error.
 
 **Parameters**
 
@@ -437,7 +478,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":67
 
 ### eth_mining {#eth_mining}
 
-Returns `true` if client is actively mining new blocks. This can only return `true` for proof-of-work networks and may not be available in some clients since [The Merge](/roadmap/merge/).
+Returns `true` if client is actively mining new blocks
+* This can only return `true` for proof-of-work networks and may not be available in some clients since [The Merge](/roadmap/merge/).
 
 **Parameters**
 
@@ -462,7 +504,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_mining","params":[],"id":71}
 
 ### eth_hashrate {#eth_hashrate}
 
-Returns the number of hashes per second that the node is mining with. This can only return `true` for proof-of-work networks and may not be available in some clients since [The Merge](/roadmap/merge/).
+Returns the number of hashes per second that the node is mining with
+* This can only return `true` for proof-of-work networks and may not be available in some clients since [The Merge](/roadmap/merge/).
 
 **Parameters**
 
@@ -487,7 +530,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_hashrate","params":[],"id":7
 
 ### eth_gasPrice {#eth_gasprice}
 
-Returns an estimate of the current price per gas in wei. For example, the Besu client examines the last 100 blocks and returns the median gas unit price by default.
+Returns an estimate of the current price per gas in wei
+* For example, the Besu client examines the last 100 blocks and returns the median gas unit price by default.
 
 **Parameters**
 
@@ -605,7 +649,8 @@ Returns the value from a storage position at a given address.
 `DATA` - the value at this storage position.
 
 **Example**
-Calculating the correct position depends on the storage to retrieve. Consider the following contract deployed at `0x295a70b2de5e3953354a6a8344e616ed314d7251` by address `0x391694e7e0b0cce554cb130d723a9d27458f9298`.
+Calculating the correct position depends on the storage to retrieve
+* Consider the following contract deployed at `0x295a70b2de5e3953354a6a8344e616ed314d7251` by address `0x391694e7e0b0cce554cb130d723a9d27458f9298`.
 
 ```
 contract Storage {
@@ -625,7 +670,8 @@ curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": [
 {"jsonrpc":"2.0","id":1,"result":"0x00000000000000000000000000000000000000000000000000000000000004d2"}
 ```
 
-Retrieving an element of the map is harder. The position of an element in the map is calculated with:
+Retrieving an element of the map is harder
+* The position of an element in the map is calculated with:
 
 ```js
 keccak(LeftPad32(key, 0), LeftPad32(map position, 0))
@@ -848,7 +894,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xC02aaA
 
 The sign method calculates an Ethereum specific signature with: `sign(keccak256("\x19Ethereum Signed Message:\n" + len(message) + message)))`.
 
-By adding a prefix to the message makes the calculated signature recognizable as an Ethereum specific signature. This prevents misuse where a malicious dapp can sign arbitrary data (e.g. transaction) and use the signature to impersonate the victim.
+By adding a prefix to the message makes the calculated signature recognizable as an Ethereum specific signature
+* This prevents misuse where a malicious dapp can sign arbitrary data (e.g. transaction) and use the signature to impersonate the victim.
 
 Note: the address to sign with must be unlocked.
 
