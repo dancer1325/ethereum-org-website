@@ -8,28 +8,60 @@ lang: en
 published: 2022-05-15
 ---
 
-[The Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf) is the formal specification for Ethereum. Except where amended by [the EIP process](/eips/), it contains the exact description of how everything works. It is written as a mathematical paper, which includes terminology programmers may not find familiar. In this paper you learn how to read it, and by extension other related mathematical papers.
+* [The Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
+  * == 💡Ethereum formal specification Berlin version (Reason: it evolves) 💡
+    * == 👀how everything works👀
+    * == mathematical paper
+
+* [EIP process](../../../eips/)
+  * == 👀Yellow Paper modifications 👀
+
+* goal this markdown
+  * how to read The Yellow Paper
+  * EVM section == Execution model (pdf's section)
 
 ## Which Yellow Paper? {#which-yellow-paper}
 
-Like almost everything else in Ethereum, the Yellow Paper evolves over time. To be able to refer to a specific version, I uploaded [the current version at writing](yellow-paper-berlin.pdf). The section, page, and equation numbers I use will refer to that version. It is a good idea to have it open in a different window while reading this document.
+* version / uploaded [here](yellow-paper-berlin.pdf)
 
 ### Why the EVM? {#why-the-evm}
 
-The original yellow paper was written right at the start of Ethereum's development. It describes the original proof-of-work based consensus mechanism that was originally used to secure the network. However, Ethereum switched off proof-of-work and started using proof-of-stake based consensus in September 2022. This tutorial will focus on the parts of the yellow paper defining the Ethereum Virtual Machine. The EVM was unchanged by the transition to proof-of-stake (except for the return value of the DIFFICULTY opcode).
+* Reasons: 🧠
+  * | Ethereum using proof-of-work -- to -- Ethereum using proof-of-stake,
+    * 👀EVM did NOT change👀 
+      * EXCEPT to, DIFFICULTY opcode's return value
+  * original yellow paper was written | start of Ethereum's development
+    * == -- based on -- proof-of-work 🧠
 
 ## 9 Execution model {#9-execution-model}
 
-This section (p. 12-14) includes most of the definition of the EVM.
+* goal
+  * EVM definition
 
-The term _system state_ includes everything you need to know about the system to run it. In a typical computer, this means the memory, content of registers, etc.
+* _system state_
+  * := ALL about the system -- to -- run it
+  * _Example:_
+    * | computer, == memory + content of registers + etc.
 
-A [Turing machine](https://en.wikipedia.org/wiki/Turing_machine) is a computational model. Essentially, it is a simplified version of a computer, which is proved to have the same ability to run computations that a normal computer can (everything that a computer can calculate a Turing machine can calculate and vice versa). This model makes it easier to prove various theorems about what is and what isn't computable.
+* [Turing machine](https://en.wikipedia.org/wiki/Turing_machine)
+  * == computational model /
+    * uses
+      * prove theorems / are OR not computable 
+  * == simplified version of a computer /
+    * computations / can run == computations / computer can run
+  * ⚠️can get into infinite loops⚠️
 
-The term [Turing-complete](https://en.wikipedia.org/wiki/Turing_completeness) means a computer that can run the same calculations as a Turing machine. Turing machines can get into infinite loops, and the EVM cannot because it would run out of gas, so it's only quasi-Turing-complete.
+* [Turing-complete](https://en.wikipedia.org/wiki/Turing_completeness) 
+  * := computer /
+    * run calculations == calculation run by Turing machine
+
+* EVM 
+  * == ⭐️quasi-Turing-complete⭐️
+    * Reason: 🧠if it's Turing-complete -> can get infinite loops -> would run out of gas🧠 
 
 ## 9.1 Basics {#91-basics}
 
+* TODO:
 This section gives the basics of the EVM and how it compares with other computational models.
 
 A [stack machine](https://en.wikipedia.org/wiki/Stack_machine) is a computer that stores intermediate data not in registers, but in a [**stack**](<https://en.wikipedia.org/wiki/Stack_(abstract_data_type)>). This is the preferred architecture for virtual machines because it is easy to implement meaning that bugs, and security vulnerabilities, are a lot less likely. The memory in the stack is divided into 256-bit words. This was chosen because it is convenient for Ethereum's core cryptographic operations such as Keccak-256 hashing and elliptic curve computations. The maximum size of the stack is 1024 items (1024 x 256 bits). When opcodes are executed they are usually getting their parameters from the stack. There are opcodes specifically for reorganizing elements in the stack such as `POP` (removes item from top of stack), `DUP_N` (duplicated N'th item in stack), etc.
@@ -268,10 +300,16 @@ With this the EVM is fully defined.
 
 ## Conclusion {#conclusion}
 
-Mathematical notation is precise and has allowed the Yellow Paper to specify every detail of Ethereum. However, it does have some drawbacks:
+* Mathematical notation drawbacks
+  - ONLY can be understood by humans -> write MANUALLY [compliance tests](https://github.com/ethereum/tests) 
+  - COMPLEX -- by -- programmers to
 
-- It can only be understood by humans, which means that [compliance tests](https://github.com/ethereum/tests) must be written manually.
-- Programmers understand computer code.
-  They may or may not understand mathematical notation.
+* newer [consensus layer specs](https://github.com/ethereum/consensus-specs/blob/dev/tests/core/pyspec/README.md)
+  * 👀written | Python 👀
 
-Maybe for these reasons, the newer [consensus layer specs](https://github.com/ethereum/consensus-specs/blob/dev/tests/core/pyspec/README.md) are written in Python. There are [execution layer specs in Python](https://ethereum.github.io/execution-specs), but they are not complete. Until and unless the entire Yellow Paper is also translated to Python or a similar language, the Yellow Paper will continue in service, and it is helpful to be able to read it.
+* [execution layer specs](https://ethereum.github.io/execution-specs)
+  * 👀written | Python 👀
+    * ❌NOT complete❌
+
+* validity of Yellow Paper
+  * TILL it's written | Python OR similar language
