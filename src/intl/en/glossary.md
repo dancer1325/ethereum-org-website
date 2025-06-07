@@ -71,6 +71,18 @@
     * network
     * its cryptocurrency
 
+# Hash
+* == fingerprint
+  * fixed-length
+  * input / variable-size
+  * produced -- by a -- hash function
+
+# Keccak-256
+* == 💡Cryptographic hash function💡
+  * uses
+    * | Ethereum
+  * standardized -- as -- SHA-3
+
 # Proof-of-stake (PoS)
 * := method / 
   * 👀's goal
@@ -90,6 +102,10 @@
 * types
   * Optimistic rollups
   * Zero-knowledge rollups 
+
+# Secure Hash Algorithm
+* := family of cryptographic hash functions /
+  * published by the National Institute of Standards and Technology (NIST)
 
 # Shard / shard chain
 * Shard chains
@@ -291,8 +307,7 @@
   "gwei-definition": "Short for gigawei, a denomination of <a href=\"/glossary/#ether\">ether</a>, commonly utilized to price <a href=\"/glossary/#gas\">gas</a>. 1 gwei = 10<sup>9</sup> <a href=\"/glossary/#wei\">wei</a>. 10<sup>9</sup> gwei = 1 ether.",
   "hard-fork-term": "Hard fork",
   "hard-fork-definition": "A permanent divergence in the <a href=\"/glossary/#blockchain\">blockchain</a>; also known as a hard-forking change. One commonly occurs when nonupgraded nodes can't validate blocks created by upgraded nodes that follow newer <a href=\"/glossary/#consensus-rules\">consensus rules</a>. Not to be confused with a fork, soft fork, software fork, or Git fork.",
-  "hash-term": "Hash",
-  "hash-definition": "A fixed-length fingerprint of variable-size input, produced by a hash function. (See <a href=\"/glossary/#keccak-256\">keccak-256</a>).",
+  
   "hash-rate-term": "Hash rate",
   "hash-rate-definition": "The number of hash calculations made per second by computers running mining software.",
   "homestead-term": "Homestead",
@@ -313,8 +328,7 @@
   "kdf-definition": "Also known as a \"password stretching algorithm,\" it is used by <a href=\"/glossary/#keystore\">keystore</a> formats to protect against brute-force, dictionary, and rainbow table attacks on passphrase encryption, by repeatedly hashing the passphrase.",
   "keystore-term": "Keystore",
   "keystore-definition": "Every account’s private key/address pair exists as a single keyfile in an Ethereum client. These are JSON text files which contains the encrypted private key of the account, which can only be decrypted with the password entered during account creation.",
-  "keccak-256-term": "Keccak-256",
-  "keccak-256-definition": "Cryptographic <a href=\"/glossary/#hash\">hash</a> function used in Ethereum. Keccak-256 was standardized as <a href=\"/glossary/#sha\">SHA</a>-3.",
+  
   "key-term": "Key",
   "key-definition": "In the context of Ethereum, keys are digital codes: a public key for receiving transactions and a private key for accessing and sending funds.<br />Public keys: These can be shared openly.<br />Private keys: These are kept secret by the owner.",
   "layer-1-term": "Layer 1",
@@ -411,8 +425,7 @@
 
   "rpc-term": "Remote procedure call (RPC)",
   "rpc-definition": "RPC lets one computer request data or action from another over a network, like asking for info with a remote control.",
-  "sha-term": "Secure Hash Algorithm (SHA)",
-  "sha-definition": "A family of cryptographic hash functions published by the National Institute of Standards and Technology (NIST).",
+
   "serialization-term": "Serialization",
   "serialization-definition": "The process of converting a data structure into a sequence of bytes.",
   "sequencer-term": "Sequencer",
