@@ -9,6 +9,11 @@
   * September 2022,
     * 💡Beacon chain -- merged to form -- CURRENT Ethereum 💡
 
+# Big-endian
+* == positional number representation /
+  * 👀MOST significant digit == FIRST | memory👀
+  * OPPOSITE of little-endian
+
 # Blockchain
 * == database of transactions /
   * duplicated & shared | ALL network's computerS
@@ -154,8 +159,7 @@
   "base-fee-term": "Base fee",
   "base-fee-definition": "Every <a href=\"/glossary/#block\">block</a> has a reserve price known as the 'base fee'. It is the minimum <a href=\"/glossary/#gas\">gas</a> fee a user must pay to include a transaction in the next block. <a href=\"/developers/docs/gas/\">More on gas and fees</a>.",
 
-  "big-endian-term": "Big-endian",
-  "big-endian-definition": "A positional number representation where the most significant digit is first in memory. The opposite of little-endian, where the least significant digit is first.",
+ 
 
   "block-explorer-term": "Block explorer",
   "block-explorer-definition": "An interface that allows a user to search for information from, and about, a blockchain. This includes retrieving individual transactions, activity associated with specific addresses and information about the network.",
