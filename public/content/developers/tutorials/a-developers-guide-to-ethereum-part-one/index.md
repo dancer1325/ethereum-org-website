@@ -10,61 +10,88 @@ source: Snake charmers
 sourceUrl: https://snakecharmers.ethereum.org/a-developers-guide-to-ethereum-pt-1/
 ---
 
-So, you’ve heard about this Ethereum thing and are ready to venture down the rabbit hole? This post will quickly cover some blockchain basics, then get you interacting with a simulated Ethereum node – reading block data, checking account balances, and sending transactions. Along the way, we’ll highlight the differences between traditional ways of building apps and this new decentralized paradigm.
+* goal
+  * blockchain basics
+  * interact with a simulated Ethereum node
+    * _Example:_ reading block data, checking account balances, and sending transactions
 
 ## (Soft) prerequisites {#soft-prerequisites}
 
-This post aspires to be accessible to a wide range of developers. [Python tools](/developers/docs/programming-languages/python/) will be involved, but they are just a vehicle for the ideas – no problem if you are not a Python developer. I will, however, be making just a few assumptions about what you already know, so we can quickly move on the Ethereum-specific bits.
+* [Python tools](/developers/docs/programming-languages/python/)
+  * uses
+    * comprehend the ideas
 
-Assumptions:
-
-- You can get around in a terminal,
-- You've written a few lines of Python code,
-- Python version 3.6 or greater is installed on your machine (use of a [virtual environment](https://realpython.com/effective-python-environment/#virtual-environments) is strongly encouraged), and
-- you’ve used `pip`, Python’s package installer.
-  Again, if any of these are untrue, or you don’t plan to reproduce the code in this article, you can likely still follow along just fine.
+* Assumptions
+  - use a terminal,
+  - write Python code,
+  - Python version 3.6+
+    - recommended to use [virtual environment](https://realpython.com/effective-python-environment/#virtual-environments)
+  - `pip`
 
 ## Blockchains, briefly {#blockchains-briefly}
 
-There are many ways to describe Ethereum, but at its heart is a blockchain. Blockchains are made up of a series of blocks, so let’s start there. In the simplest terms, each block on the Ethereum blockchain is just some metadata and a list of transactions. In JSON format, that looks something like this:
+* EACH block | Ethereum blockchain
+  * == metadata (`parentHash` + ...) + list of transactions
+    * `parentHash`
+      * == PREVIOUS block's hash
+  * _Example:_ | JSON format
+    ```json
+    {
+       "number": 1234567,
+       "hash": "0xabc123...",
+       "parentHash": "0xdef456...",
+       ...,
+       "transactions": [...]
+    }
+    ```
+  * [block](/developers/docs/blocks/) 
 
-```json
-{
-   "number": 1234567,
-   "hash": "0xabc123...",
-   "parentHash": "0xdef456...",
-   ...,
-   "transactions": [...]
-}
-```
-
-Each [block](/developers/docs/blocks/) has a reference to the block that came before it; the `parentHash` is simply the hash of the previous block.
-
-<FeaturedText>Note: Ethereum makes regular use of <a href="https://wikipedia.org/wiki/Hash_function">hash functions</a> to produce fixed-size values (“hashes”). Hashes play an important role in Ethereum, but you can safely think of them as unique IDs for now.</FeaturedText>
+* [hash functions](https://wikipedia.org/wiki/Hash_function)
+  * -- produce -- “hashes” (fixed-size values) 
+  * uses
+    * by Ethereum
 
 ![A diagram depicting a blockchain including the data inside  each block](./blockchain-diagram.png)
 
-_A blockchain is essentially a linked list; each block has a reference to the previous block._
+* blockchain
+  * == 💡linked list💡 /
+  * 's rules == peer-to-peer protocols
+  * decentralized
+    * == NO central authority
+    * network of peers decide which transactions to include | NEXT block
+  * if you want to send money -- to a -- friend
+    * steps
+      * broadcast that transaction | network
+      * wait / transaction is included | upcoming block
+      * blockchain verifies -- , via currency native, that -- money was truly sent
 
-This data structure is nothing novel, but the rules (i.e., peer-to-peer protocols) that govern the network are. There’s no central authority; the network of peers must collaborate to sustain the network, and compete to decide which transactions to include in the next block. So, when you want to send some money to a friend, you’ll need to broadcast that transaction to the network, then wait for it to be included in an upcoming block.
-
-The only way for the blockchain to verify that money was truly sent from one user to another is to use a currency native to (i.e., created and governed by) that blockchain. In Ethereum, this currency is called ether, and the Ethereum blockchain contains the only official record of account balances.
+* Ethereum blockchain
+  * contains the ONLY official record of account balances
 
 ## A new paradigm {#a-new-paradigm}
 
-This new decentralized tech stack has spawned new developer tools. Such tools exist in many programming languages, but we’ll be looking through the Python lens. To reiterate: even if Python isn’t your language of choice, it shouldn’t be much trouble to follow along.
+* TODO: This new decentralized tech stack has spawned new developer tools
+* Such tools exist in many programming languages, but we’ll be looking through the Python lens
+* To reiterate: even if Python isn’t your language of choice, it shouldn’t be much trouble to follow along.
 
-Python developers that want to interact with Ethereum are likely to reach for [Web3.py](https://web3py.readthedocs.io/). Web3.py is a library that greatly simplifies the way you connect to an Ethereum node, then send and receive data from it.
+Python developers that want to interact with Ethereum are likely to reach for [Web3.py](https://web3py.readthedocs.io/)
+* Web3.py is a library that greatly simplifies the way you connect to an Ethereum node, then send and receive data from it.
 
-<FeaturedText>Note: “Ethereum node” and “Ethereum client” are used interchangeably. In either case, it refers to the software that a participant in the Ethereum network runs. This software can read block data, receive updates when new blocks are added to the chain, broadcast new transactions, and more. Technically, the client is the software, the node is the computer running the software.</FeaturedText>
+<FeaturedText>Note: “Ethereum node” and “Ethereum client” are used interchangeably
+* In either case, it refers to the software that a participant in the Ethereum network runs
+* This software can read block data, receive updates when new blocks are added to the chain, broadcast new transactions, and more
+* Technically, the client is the software, the node is the computer running the software.</FeaturedText>
 
-[Ethereum clients](/developers/docs/nodes-and-clients/) can be configured to be reachable by [IPC](https://wikipedia.org/wiki/Inter-process_communication), HTTP, or Websockets, so Web3.py will need to mirror this configuration. Web3.py refers to these connection options as **providers**. You’ll want to choose one of the three providers to link the Web3.py instance with your node.
+[Ethereum clients](/developers/docs/nodes-and-clients/) can be configured to be reachable by [IPC](https://wikipedia.org/wiki/Inter-process_communication), HTTP, or Websockets, so Web3.py will need to mirror this configuration
+* Web3.py refers to these connection options as **providers**
+* You’ll want to choose one of the three providers to link the Web3.py instance with your node.
 
 ![A diagram showing how web3.py uses IPC to connect your application to an Ethereum node](./web3py-and-nodes.png)
 
 _Configure the Ethereum node and Web3.py to communicate via the same protocol, e.g., IPC in this diagram._
 
-Once Web3.py is properly configured, you can begin to interact with the blockchain. Here’s a couple of Web3.py usage examples as a preview of what’s to come:
+Once Web3.py is properly configured, you can begin to interact with the blockchain
+* Here’s a couple of Web3.py usage examples as a preview of what’s to come:
 
 ```python
 # read block data:
