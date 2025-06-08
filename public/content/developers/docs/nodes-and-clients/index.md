@@ -48,7 +48,7 @@ sidebarDepth: 2
       * the latest database 
 
 * consensus client
-  * or Beacon Node or CL client or Eth2 client
+  * 👀or Beacon Node or CL client or Eth2 client 👀
   * 👀implements the proof-of-stake consensus algorithm👀 
     * -> network can achieve agreement -- based on -- validated data -- from the -- execution client
 
@@ -79,110 +79,193 @@ sidebarDepth: 2
 
 ### Tracking nodes | network {#network-overview}
 
-* TODO: Multiple trackers offer a real-time overview of nodes in the Ethereum network
-* Note that due to the nature of decentralized networks, these crawlers can only provide a limited view of the network and might report different results.
+* Tracking nodes
+  * display real-time overview of nodes | Ethereum network /
+    * limited view of the network
+      * Reason: 🧠decentralized networks🧠
+    * 👀might report DIFFERENT results 👀
+ 
 
-- [Map of nodes](https://etherscan.io/nodetracker) by Etherscan
-- [Ethernodes](https://ethernodes.org/) by Bitfly
-- [Nodewatch](https://www.nodewatch.io/) by Chainsafe, crawling consensus nodes
-- [Monitoreth](https://monitoreth.io/) - by MigaLabs, A distributed network monitoring tool
+- [Map of nodes](https://etherscan.io/nodetracker)
+- [Ethernodes](https://ethernodes.org/)
+- [Nodewatch](https://www.nodewatch.io/)
+  - crawl consensus nodes
+- [Monitoreth](https://monitoreth.io/)
+  - distributed network monitoring tool
 
 ## Node types {#node-types}
 
-If you want to [run your own node](/developers/docs/nodes-and-clients/run-a-node/), you should understand that there are different types of node that consume data differently
-* In fact, clients can run three different types of nodes: light, full and archive
-* There are also options of different sync strategies which enable faster synchronization time
-* Synchronization refers to how quickly it can get the most up-to-date information on Ethereum's state.
+* EACH node type
+  * consume DIFFERENTLY data 
+  * has DIFFERENT sync strategies / enable faster synchronization
+
+* synchronization
+  * == how quickly up-to-date information | Ethereum's state
 
 ### Full node {#full-node}
 
-Full nodes do a block-by-block validation of the blockchain, including downloading and verifying the block body and state data for each block
-* There are different classes of full node - some start from the genesis block and verify every single block in the entire history of the blockchain
-* Others start their verification at a more recent block that they trust to be valid (e.g. Geth's 'snap sync')
-* Regardless of where the verification starts, full nodes only keep a local copy of relatively recent data (typically the most recent 128 blocks), allowing older data to be deleted to save disk space
-* Older data can be regenerated when it is needed.
+* 👀validate block-by-block the blockchain 👀
+  * ==
+    * download the blocks
+    * verify / EACH block,
+      * block body
+      * state data 
 
-- Stores full blockchain data (although this is periodically pruned so a full node does not store all state data back to genesis)
-- Participates in block validation, verifies all blocks and states.
-- All states can be either retrieved from local storage or regenerated from 'snapshots' by a full node.
-- Serves the network and provides data on request.
+* full node's classes
+  * classes / verify [genesis block, ENTIRE history of the blockchain]
+  * classes / verify MORE recent block
+    * _Example:_ Geth's 'snap sync
+
+* ONLY store local copy of relatively RECENT data (last 128 blocks)
+  * older data are deleted
+    * Reason: 🧠
+      * save disk space
+      * if you need it -> you can regenerate it🧠
+  * if you want to get ALL states
+    * retrieve -- from -- local storage or
+    * regenerate -- from -- 'snapshots' 
+* provides
+  * data | request (TODO: ❓)
 
 ### Archive node {#archive-node}
 
-Archive nodes are full nodes that verify every block from genesis and never delete any of the downloaded data.
+* == full nodes / 
+  * verify every block -- from -- genesis
+  * NEVER delete any downloaded data
 
-- Stores everything kept in the full node and builds an archive of historical states
-* It is needed if you want to query something like an account balance at block #4,000,000, or simply and reliably test your own transactions set without mining them using tracing.
-- This data represents units of terabytes, which makes archive nodes less attractive for average users but can be handy for services like block explorers, wallet vendors, and chain analytics.
+* stores everything kept | full node
+* builds an archive of historical states
+  * terabytes
+  * uses 
+    * query something
+      * _Example:_ account balance | block #4,000,000
+    * test your own transactions set
+      * WITHOUT mining them
+      * -- via -- tracing
+    * by services
+      * _Example:_ block explorers, wallet vendors, and chain analytics
 
-Syncing clients in any mode other than archive will result in pruned blockchain data
-* This means, there is no archive of all historical states but the full node is able to build them on demand.
+* ⚠️if you sync clients | mode != archive -> pruned blockchain data⚠️
+  * Reason: 🧠if you do NOT build full node / build ALL historical states -> there is NO archive of ALL historical states🧠
 
-Learn more about [Archive nodes](/developers/docs/nodes-and-clients/archive-nodes).
+* [Archive nodes](/developers/docs/nodes-and-clients/archive-nodes)
 
 ### Light node {#light-node}
 
-Instead of downloading every block, light nodes only download block headers
-* These headers contain summary information about the contents of the blocks
-* Any other information the light node requires gets requested from a full node
-* The light node can then independently verify the data they receive against the state roots in the block headers
-* Light nodes enable users to participate in the Ethereum network without the powerful hardware or high bandwidth required to run full nodes
-* Eventually, light nodes might run on mobile phones or embedded devices
-* The light nodes do not participate in consensus (i.e. they cannot be miners/validators), but they can access the Ethereum blockchain with the same functionality and security guarantees as a full node.
+* ⚠️ONLY download block headers⚠️
+  * if light node requires ANOTHER information -> gets requested -- from a -- full node 
+  * -> ❌NOT require (vs full nodes) ❌
+    * powerful hardware or
+    * high bandwidth 
 
-Light clients are an area of active development for Ethereum and we expect to see new light clients for the consensus layer and execution layer soon.
-There are also potential routes to providing light client data over the [gossip network](https://www.ethportal.net/)
-* This is advantageous because the gossip network could support a network of light nodes without requiring full nodes to serve requests.
+* can
+  * verify data independently
+  * access | Ethereum blockchain / 
+    * SAME functionality
+    * SAME security guarantees
 
-Ethereum does not support a large population of light nodes yet, but light node support is an area expected to develop rapidly in the near future
-* In particular, clients like [Nimbus](https://nimbus.team/), [Helios](https://github.com/a16z/helios), and [LodeStar](https://lodestar.chainsafe.io/) are currently heavily focused on light nodes.
+* block headers
+  * == block's content's summary information
+ 
+* devices | can run
+  * mobile phones
+  * embedded devices
+
+* ❌NOT participate | consensus❌   
+  * == can NOT be miners/validators
+
+* ACTIVELY under development
+  * == there are NOT so many
+  * _Example:_ 
+    * [Nimbus](https://nimbus.team/),
+    * [Helios](https://github.com/a16z/helios),
+    * [LodeStar](https://lodestar.chainsafe.io/)
+
+* [gossip network](https://www.ethportal.net/)
+  * portal network of light clients 
+    * WITHOUT requiring full nodes -- to -- serve requests
 
 ## Why should I run an Ethereum node? {#why-should-i-run-an-ethereum-node}
 
-Running a node allows you to directly, trustlessly and privately use Ethereum while supporting the network by keeping it more robust and decentralized.
+* allows you to
+  * use Ethereum
+    * directly,
+      * == ❌NOT need to use OTHER nodes❌
+    * trustlessly
+    * privately 
+
+* support the network
+  * Reason: 🧠keeping it MORE robust and decentralized🧠
+
+* "Don't trust, verify"
+  * FAMOUS quote
 
 ### Benefits to you {#benefits-to-you}
 
-Running your own node enables you to use Ethereum in a private, self-sufficient and trustless manner
-* You don't need to trust the network because you can verify the data yourself with your client
-* "Don't trust, verify" is a popular blockchain mantra.
-
-- Your node verifies all the transactions and blocks against consensus rules by itself. This means you don’t have to rely on any other nodes in the network or fully trust them.
-- You can use an Ethereum wallet with your own node. You can use dapps more securely and privately because you won't have to leak your addresses and balances to intermediaries. Everything can be checked with your own client. [MetaMask](https://metamask.io), [Frame](https://frame.sh/), and [many other wallets](/wallets/find-wallet/) offer RPC-importing, allowing them to use your node.
-- You can run and self-host other services which depend on data from Ethereum. For example, this might be a Beacon Chain validator, software like layer 2, infrastructure, block explorers, payment processors, etc.
-- You can provide your own custom [RPC endpoints](/developers/docs/apis/json-rpc/). You could even offer these endpoints publicly to the community to help them avoid big centralized providers.
-- You can connect to your node using **Inter-process Communications (IPC)** or rewrite the node to load your program as a plugin. This grants low latency, which helps a lot, e.g. when processing a lot of data using web3 libraries or when you need to replace your transactions as fast as possible (i.e. frontrunning).
-- You can directly stake ETH to secure the network and earn rewards. See [solo staking](/staking/solo/) to get started.
+* use 
+  * Ethereum wallet | your OWN node
+  * dapps MORE securely & privately 
+    * Reason: 🧠NOT leak your addresses & balances | intermediaries🧠
+* OWN client / check everything 
+* [MetaMask](https://metamask.io), [Frame](https://frame.sh/), and [many other wallets](/wallets/find-wallet/) 
+  * can use your node
+    * Reason: 🧠thanks to RPC-importing🧠
+* run & self-host other services / -- depend on -- Ethereum's data
+  * _Examples:_ Beacon Chain validator, software L2, infrastructure, block explorers, payment processors, etc.
+* customize [RPC endpoints](/developers/docs/apis/json-rpc/)
+  * offered publicly -- to the -- community
+* connect -- , via Inter-process Communications (IPC), to -- your node
+* rewrite the node / load your program -- as a -- plugin
+  * -> low latency -> make easier
+    * | process a lot of data -- via -- web3 libraries or 
+    * | replace FASTLY your transactions
+* DIRECTLY stake ETH
+  * -- to --
+    * secure the network
+    * earn rewards
+  * see [solo staking](/staking/solo/)
 
 ![How you access Ethereum via your application and nodes](./nodes.png)
 
 ### Network benefits {#network-benefits}
 
-A diverse set of nodes is important for Ethereum’s health, security and operational resiliency.
+* DIVERSE set of nodes
+  * enable Ethereum’s 
+    * health
+    * security
+    * operational resiliency
 
-- Full nodes enforce the consensus rules so they can’t be tricked into accepting blocks that don't follow them. This provides extra security in the network because if all the nodes were light nodes, which don't do full verification, validators could attack the network.
-- In case of an attack which overcomes the crypto-economic defenses of [proof-of-stake](/developers/docs/consensus-mechanisms/pos/#what-is-pos), a social recovery can be performed by full nodes choosing to follow the honest chain.
-- More nodes in the network result in a more diverse and robust network, the ultimate goal of decentralization, which enables a censorship-resistant and reliable system.
-- Full nodes provide access to blockchain data for lightweight clients that depend on it. Light nodes don't store the whole blockchain, instead they verify data via the [state roots in block headers](/developers/docs/blocks/#block-anatomy). They can request more information from full nodes if they need it.
-
-If you run a full node, the whole Ethereum network benefits from it, even if you don't run a validator.
+* FULL nodes 
+  * enforce the consensus rules
+  * provides 
+    * EXTRA security | network
+      * Reason: 🧠if ALL the nodes were light nodes (== NOT full verify) -> validators could attack the network🧠
+    * provide, for lightweight clients, access -- to -- blockchain data 
+* if an attack overcomes [proof-of-stake](/developers/docs/consensus-mechanisms/pos/#what-is-pos) -> social recovery -- can be performed by -- FULL nodes / choose to follow the honest chain
+* if MORE nodes | network -> MORE diverse and robust network 
+* if you run a FULL node -> whole Ethereum network benefits from it
 
 ## Running your own node {#running-your-own-node}
 
-Interested in running your own Ethereum client?
-
-For a beginner-friendly introduction visit our [run a node](/run-a-node) page to learn more.
-
-If you're more of a technical user, dive into more details and options on how to [spin up your own node](/developers/docs/nodes-and-clients/run-a-node/).
+* [run a node](/run-a-node)
+* [spin up your own node](/developers/docs/nodes-and-clients/run-a-node/)
 
 ## Alternatives {#alternatives}
 
-Setting up your own node can cost you time and resources but you don’t always need to run your own instance. In this case, you can use a third party API provider
-* For an overview of using these services, check out [nodes as a service](/developers/docs/nodes-and-clients/nodes-as-a-service/).
+* cons of setting up your OWN node
+  * time
+  * resources
 
-If somebody runs an Ethereum node with a public API in your community, you can point your wallets to a community node via Custom RPC and gain more privacy than with some random trusted third party.
+* use a third party API provider
+  * [nodes -- as a -- service](/developers/docs/nodes-and-clients/nodes-as-a-service/)
 
-On the other hand, if you run a client, you can share it with your friends who might need it.
+* run a 
+  * Ethereum node / has public API
+    * uses
+      * point your wallets -- , via Custom RPC, to a -- community node
+  * client
+    * uses
+      * by anyone
 
 ## Execution clients {#execution-clients}
 
@@ -203,7 +286,9 @@ On the other hand, if you run a client, you can share it with your friends who m
 
 ### Besu {#besu}
 
-Hyperledger Besu is an enterprise-grade Ethereum client for public and permissioned networks. It runs all of the Ethereum Mainnet features, from tracing to GraphQL, has extensive monitoring and is supported by ConsenSys, both in open community channels and through commercial SLAs for enterprises. It is written in Java and is Apache 2.0 licensed.
+Hyperledger Besu is an enterprise-grade Ethereum client for public and permissioned networks
+* It runs all of the Ethereum Mainnet features, from tracing to GraphQL, has extensive monitoring and is supported by ConsenSys, both in open community channels and through commercial SLAs for enterprises
+* It is written in Java and is Apache 2.0 licensed.
 
 Besu's extensive [documentation](https://besu.hyperledger.org/en/stable/) will guide you through all details on its features and setups.
 
@@ -213,13 +298,18 @@ Erigon, formerly known as Turbo‐Geth, started as a fork of Go Ethereum oriente
 
 ### Go Ethereum {#geth}
 
-Go Ethereum (Geth for short) is one of the original implementations of the Ethereum protocol. Currently, it is the most widespread client with the biggest user base and variety of tooling for users and developers. It is written in Go, fully open source and licensed under the GNU LGPL v3.
+* Ethereum protocol's original implementations 
+* MOST widespread client
+* the biggest
+  * user base
+  * variety of tooling
 
-Learn more about Geth in its [documentation](https://geth.ethereum.org/docs/).
+* [documentation](https://geth.ethereum.org/docs/)
 
 ### Nethermind {#nethermind}
 
-Nethermind is an Ethereum implementation created with the C# .NET tech stack, licensed with LGPL-3.0, running on all major platforms including ARM. It offers great performance with:
+Nethermind is an Ethereum implementation created with the C# .NET tech stack, licensed with LGPL-3.0, running on all major platforms including ARM
+* It offers great performance with:
 
 - an optimized virtual machine
 - state access
@@ -298,70 +388,131 @@ Documentation can be found in the [Grandine Book](https://docs.grandine.io/)
 
 ## Synchronization modes {#sync-modes}
 
-To follow and verify current data in the network, the Ethereum client needs to sync with the latest network state. This is done by downloading data from peers, cryptographically verifying their integrity, and building a local blockchain database.
+* Ethereum client 
+  * 👀sync -- with the -- latest network state👀
+    * Reason: 🧠follow & verify CURRENT data | network🧠 
+    * steps
+      * download data -- , cryptographically verifying their integrity, from -- peers 
+      * build a local blockchain database
+    * have their OWN sync algorithms
 
-Synchronization modes represent different approaches to this process with various trade-offs. Clients also vary in their implementation of sync algorithms. Always refer to the official documentation of your chosen client for specifics on implementation.
+* Synchronization modes
+  * == DIFFERENT sync approaches
 
 ### Execution layer sync modes {#execution-layer-sync-modes}
 
-The execution layer may be run in different modes to suit different use cases, from re-executing the blockchain's world state to only syncing with the tip of the chain from a trusted checkpoint.
-
 #### Full sync {#full-sync}
 
-A full sync downloads all blocks (including headers and block bodies) and regenerates the state of the blockchain incrementally by executing every block from genesis.
+* steps
+  * downloads ALL blocks (ALSO headers & block bodies)
+  * 👀regenerates the state of the blockchain incrementally👀
+    * executing ALL block -- from -- genesis
 
-- Minimizes trust and offers the highest security by verifying every transaction.
-- With an increasing number of transactions, it can take days to weeks to process all transactions.
+* pros
+  * minimizes trust
+  * the highest security
+    * Reason: 🧠verify EVERY transaction🧠
 
-[Archive nodes](#archive-node) perform a full sync to build (and retain) a complete history of the state changes made by every transaction in every block.
+* can take [days, weeks]
+
+* _Example:_ [Archive nodes](#archive-node)
 
 #### Fast sync {#fast-sync}
 
-Like a full sync, a fast sync downloads all blocks (including headers, transactions, and receipts). However, instead of re-processing the historical transactions, a fast sync relies on the receipts until it reaches a recent head, when it switches to importing and processing blocks to provide a full node.
+* steps
+  * downloads ALL blocks (ALSO headers + transactions + receipts)
+  * relies | receipts / reaches a RECENT head
 
-- Fast sync strategy.
-- Reduces processing demand in favor of bandwidth usage.
+* pros
+  * fast sync strategy
+  * reduces processing demand -- in favor of -- bandwidth usage
 
 #### Snap sync {#snap-sync}
 
-Snap syncs also verify the chain block-by-block. However, instead of starting at the genesis block, a snap sync starts at a more recent 'trusted' checkpoint that is known to be part of the true blockchain. The node saves periodic checkpoints while deleting data older than a certain age. These snapshots are used to regenerate state data as needed, rather than storing it forever.
+* verify the chain 👀block-by-block👀
 
-- Fastest sync strategy, currently default in Ethereum Mainnet.
-- Saves a lot of disk usage and network bandwidth without sacrificing security.
+* steps
+  * verifies -- from -- MORE recent 'trusted' checkpoint ( / part of the blockchain)
+    * == ❌NOT start | genesis block❌ 
 
-[More on snap sync](https://github.com/ethereum/devp2p/blob/master/caps/snap.md).
+* checkpoints
+  * saved PERIODICALLY -- by -- node
+    * node remove data / older than certain age
+  * uses
+    * regenerate state data
+  * NOT uses
+    * storing it FOREVER
+
+* | NOWADAYS,
+  * by default, | Ethereum Mainnet
+
+* pros
+  * fast sync strategy
+  * saves disk usage & network bandwidth - WITHOUT sacrificing -- security
+
+* [More on snap sync](https://github.com/ethereum/devp2p/blob/master/caps/snap.md)
 
 #### Light sync {#light-sync}
 
-Light client mode downloads all block headers, block data, and verifies some randomly. Only syncs tip of the chain from the trusted checkpoint.
+* steps
+  * downloads ALL block headers & block data
+  * verify RANDOMLY SOME of PREVIOUS information 
+  * syncs top of the chain -- from the -- trusted checkpoint
+    * == 
+      * gets ONLY the LATEST state
+      * rely on developers & consensus mechanism 
+   
+* pros
+  * client is ready to use | FEW minutes
 
-- Gets only the latest state while relying on trust in developers and consensus mechanism.
-- Client ready to use with current network state in a few minutes.
+* **NB** Light sync (TODO: ❓) 
+  * ❌NOT YET work with proof-of-stake Ethereum❌
 
-**NB** Light sync does not yet work with proof-of-stake Ethereum - new versions of light sync should ship soon!
-
-[More on light clients](/developers/docs/nodes-and-clients/light-clients/)
+* [More on light clients](/developers/docs/nodes-and-clients/light-clients/)
 
 ### Consensus layer sync modes {#consensus-layer-sync-modes}
 
 #### Optimistic sync {#optimistic-sync}
 
-Optimistic sync is a post-merge synchronization strategy designed to be opt-in and backwards compatible, allowing execution nodes to sync via established methods. The execution engine can _optimistically_ import beacon blocks without fully verifying them, find the latest head, and then start syncing the chain with the above methods. Then, after the execution client has caught up, it will inform the consensus client of the validity of the transactions in the Beacon Chain.
+* == post-merge synchronization strategy
+* design
+  * 👀opt-in & backwards compatible👀
+* allow
+  * execution nodes can -- , via established methods, -- sync 
 
-[More on optimistic sync](https://github.com/ethereum/consensus-specs/blob/dev/sync/optimistic.md)
+* steps
+  * execution engine 
+    * _optimistically_ import beacon blocks / WITHOUT fully verifying them
+    * find the latest head
+    * start -- , with the above methods (TODO: ❓), -- syncing the chain 
+    * | being updated,
+      * inform -- , about the validity of the transactions | Beacon Chain, to the -- consensus client  
+
+* [More on optimistic sync](https://github.com/ethereum/consensus-specs/blob/dev/sync/optimistic.md)
 
 #### Checkpoint sync {#checkpoint-sync}
 
-A checkpoint sync, also known as weak subjectivity sync, creates a superior user experience for syncing a Beacon Node. It's based on assumptions of [weak subjectivity](/developers/docs/consensus-mechanisms/pos/weak-subjectivity/) which enables syncing the Beacon Chain from a recent weak subjectivity checkpoint instead of genesis. Checkpoint syncs make the initial sync time significantly faster with similar trust assumptions as syncing from [genesis](/glossary/#genesis-block).
+* == weak subjectivity sync
+* steps
+  * creates a superior user experience -- for -- syncing a Beacon Node
+    * == node
+      * download -- , connecting to a remote service, -- recent finalized states
+        * ⚠️choose CAREFULLY the remote service ⚠️
+      * 👀verify data -- from -- recent finalized states👀 
 
-In practice, this means your node connects to a remote service to download recent finalized states and continues verifying data from that point. The third party providing the data is trusted and should be picked carefully.
+* assumptions
+  * [weak subjectivity](/developers/docs/consensus-mechanisms/pos/weak-subjectivity/) /
+    * sync the Beacon Chain -- from a -- recent weak subjectivity checkpoint (!= genesis)
 
-More on [checkpoint sync](https://notes.ethereum.org/@djrtwo/ws-sync-in-practice)
+* 's INITIAL sync time vs sync from [genesis](/glossary/#genesis-block)'s INITIAL sync time 
+  * faster
+
+* [checkpoint sync](https://notes.ethereum.org/@djrtwo/ws-sync-in-practice)
 
 ## Further reading {#further-reading}
 
-- [Ethereum 101 - Part 2 - Understanding Nodes](https://kauri.io/ethereum-101-part-2-understanding-nodes/48d5098292fd4f11b251d1b1814f0bba/a) _– Wil Barnes, 13 February 2019_
-- [Running Ethereum Full Nodes: A Guide for the Barely Motivated](https://medium.com/@JustinMLeroux/running-ethereum-full-nodes-a-guide-for-the-barely-motivated-a8a13e7a0d31) _– Justin Leroux, 7 November 2019_
+- [Ethereum 101 - Part 2 - Understanding Nodes](https://kauri.io/ethereum-101-part-2-understanding-nodes/48d5098292fd4f11b251d1b1814f0bba/a) _
+- [Running Ethereum Full Nodes: A Guide for the Barely Motivated](https://medium.com/@JustinMLeroux/running-ethereum-full-nodes-a-guide-for-the-barely-motivated-a8a13e7a0d31) _
 
 ## Related topics {#related-topics}
 
@@ -370,4 +521,6 @@ More on [checkpoint sync](https://notes.ethereum.org/@djrtwo/ws-sync-in-practice
 
 ## Related tutorials {#related-tutorials}
 
-- [Turn your Raspberry Pi 4 into a validator node just by flashing the MicroSD card – Installation guide](/developers/tutorials/run-node-raspberry-pi/) _– Flash your Raspberry Pi 4, plug in an ethernet cable, connect the SSD disk and power up the device to turn the Raspberry Pi 4 into a full Ethereum node running the execution layer (Mainnet) and / or the consensus layer (Beacon Chain / validator)._
+- [Turn your Raspberry Pi 4 -- into a -- validator node](/developers/tutorials/run-node-raspberry-pi/) 
+  - steps
+    - flash the MicroSD card
