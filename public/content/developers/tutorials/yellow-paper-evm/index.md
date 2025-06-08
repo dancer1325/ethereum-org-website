@@ -57,7 +57,9 @@ published: 2022-05-15
 
 * EVM 
   * == ⭐️quasi-Turing-complete⭐️
-    * Reason: 🧠if it's Turing-complete -> can get infinite loops -> would run out of gas🧠 
+    * Reason: 🧠
+      * if it's Turing-complete -> can get infinite loops -> would run out of gas
+      * quasi == computation is -- , due to the parameter gas, -- intrinsically bounded🧠 
 
 ## 9.1 Basics {#91-basics}
 
