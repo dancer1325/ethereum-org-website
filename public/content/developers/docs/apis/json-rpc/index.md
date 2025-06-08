@@ -77,69 +77,98 @@ lang: en
 
 ### Hex value encoding {#hex-encoding}
 
-* TODO: Two key data types get passed over JSON: unformatted byte arrays and quantities
-* Both are passed with a hex encoding but with different requirements for formatting.
+* key data types / get passed -- over -- JSON
+  * are
+    * unformatted byte arrays
+    * quantities (integers, numbers)
+  * BOTH are hex encoded
 
 #### Quantities {#quantities-encoding}
 
-When encoding quantities (integers, numbers): encode as hex, prefix with "0x", the most compact representation (slight exception: zero should be represented as "0x0").
-
-Here are some examples:
-
-- 0x41 (65 in decimal)
-- 0x400 (1024 in decimal)
-- WRONG: 0x (should always have at least one digit - zero is "0x0")
-- WRONG: 0x0400 (no leading zeroes allowed)
-- WRONG: ff (must be prefixed 0x)
+* encoding quantities 
+  * 💡-- as -- hex💡
+    * == "0x" prefix 
+    * the MOST compact representation
+    * EXCEPTION
+      * 0 -- should be represented as -- "0x0"
+    * _Examples:_
+      - 0x41
+        - == 65 | decimal
+      - 0x400
+        - == 1024 | decimal
+      - WRONG: 0x 
+        - == ALWAYS have > 1 digit
+        - zero == "0x0"
+      - WRONG: 0x0400 
+        - NO leading 0s ALLOWED
+      - WRONG: ff 
+        - MUST be prefixed 0x
 
 ### Unformatted data {#unformatted-data-encoding}
 
-When encoding unformatted data (byte arrays, account addresses, hashes, bytecode arrays): encode as hex, prefix with "0x", two hex digits per byte.
+* unformatted data
+  * == byte arrays & account addresses & hashes & bytecode arrays
+* way to encode unformatted data
+  * encode as hex,
+  * prefix with "0x"
+  * 2 hex digits / byte
 
-Here are some examples:
-
-- 0x41 (size 1, "A")
-- 0x004200 (size 3, "0B0")
-- 0x (size 0, "")
-- WRONG: 0xf0f0f (must be even number of digits)
-- WRONG: 004200 (must be prefixed 0x)
+* _Examples:_
+  - 0x41 
+    - size 1,
+    - "A"
+  - 0x004200 
+    - size 3
+    - "0B0"
+  - 0x 
+    - size 0
+    - ""
+  - WRONG: 0xf0f0f
+    - == EVEN number of digits
+  - WRONG: 004200 
+    - == prefixed 0x
 
 ### The default block parameter {#default-block}
 
-The following methods have an extra default block parameter:
+* methods / have an EXTRA DEFAULT block parameter
+  - [eth_getBalance](#eth_getbalance)
+  - [eth_getCode](#eth_getcode)
+  - [eth_getTransactionCount](#eth_gettransactioncount)
+  - [eth_getStorageAt](#eth_getstorageat)
+  - [eth_call](#eth_call)
 
-- [eth_getBalance](#eth_getbalance)
-- [eth_getCode](#eth_getcode)
-- [eth_getTransactionCount](#eth_gettransactioncount)
-- [eth_getStorageAt](#eth_getstorageat)
-- [eth_call](#eth_call)
+* requests / act | state of Ethereum -> block's height -- is determined by the -- last default block parameter 
 
-When requests are made that act on the state of Ethereum, the last default block parameter determines the height of the block.
-
-The following options are possible for the defaultBlock parameter:
-
-- `HEX String` - an integer block number
-- `String "earliest"` for the earliest/genesis block
-- `String "latest"` - for the latest proposed block
-- `String "safe"` - for the latest safe head block
-- `String "finalized"` - for the latest finalized block
-- `String "pending"` - for the pending state/transactions
+* options / defaultBlock parameter
+  - `HEX String`
+    - integer block number
+  - `String "earliest"`
+    - for the earliest/genesis block
+  - `String "latest"`
+    - for the latest proposed block
+  - `String "safe"`
+    - for the latest safe head block
+  - `String "finalized"`
+    - for the latest finalized block
+  - `String "pending"`
+    - for the pending state/transactions
 
 ## Examples
 
 ### Curl examples {#curl-examples}
 
-* hit -- , via [curl](https://curl.se), -- individual JSON_RPC API endpoints 
+* == hit -- , via [curl](https://curl.se), -- individual JSON_RPC API endpoints 
 
-The curl requests might return an error message relating to the content type
-* This is because the `--data` option sets the content type to `application/x-www-form-urlencoded`
-* If your node does complain about this, manually set the header by placing `-H "Content-Type: application/json"` at the start of the call
-* The examples also do not include the URL/IP & port combination which must be the last argument given to curl (e.g. `127.0.0.1:8545`)
-* A complete curl request including these additional data takes the following form:
+* curl requests
+  * can return an error message -- related to the -- content type
+    * Reason:🧠 `--data` == `application/x-www-form-urlencoded`🧠
+    * if your node complains about this -> MANUALLY set the header == `-H "Content-Type: application/json"` | start of the call
 
-```shell
-curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}' 127.0.0.1:8545
-```
+* _Examples:_ 
+  * complete curl request / include additional data
+    ```shell
+    curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}' 127.0.0.1:8545
+    ```
 
 ### Usage Example {#usage-example}
 
@@ -149,11 +178,17 @@ curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","metho
     * JSON_RPC API
     * curl
 
-#### Deploying a contract using JSON_RPC {#deploying-contract}
+#### Deploying a contract -- via -- JSON_RPC {#deploying-contract}
 
-This section includes a demonstration of how to deploy a contract using only the RPC interface. There are alternative routes to deploying contracts where this complexity is abstracted away—for example, using libraries built on top of the RPC interface such as [web3.js](https://web3js.readthedocs.io/) and [web3.py](https://github.com/ethereum/web3.py). These abstractions are generally easier to understand and less error-prone, but it is still helpful to understand what is happening under the hood.
+* TODO: This section includes a demonstration of how to deploy a contract using only the RPC interface
+* There are alternative routes to deploying contracts where this complexity is abstracted away—for example, using libraries built on top of the RPC interface such as [web3.js](https://web3js.readthedocs.io/) and [web3.py](https://github.com/ethereum/web3.py)
+* These abstractions are generally easier to understand and less error-prone, but it is still helpful to understand what is happening under the hood.
 
-The following is a straightforward smart contract called `Multiply7` that will be deployed using the JSON-RPC interface to an Ethereum node. This tutorial assumes the reader is already running a Geth node. More information on nodes and clients is available [here](/developers/docs/nodes-and-clients/run-a-node). Please refer to individual [client](/developers/docs/nodes-and-clients/) documentation to see how to start the HTTP JSON-RPC for non-Geth clients. Most clients default to serving on `localhost:8545`.
+The following is a straightforward smart contract called `Multiply7` that will be deployed using the JSON-RPC interface to an Ethereum node
+* This tutorial assumes the reader is already running a Geth node
+* More information on nodes and clients is available [here](/developers/docs/nodes-and-clients/run-a-node)
+* Please refer to individual [client](/developers/docs/nodes-and-clients/) documentation to see how to start the HTTP JSON-RPC for non-Geth clients
+* Most clients default to serving on `localhost:8545`.
 
 ```javascript
 contract Multiply7 {
@@ -289,21 +324,30 @@ This was just a brief introduction into some of the most common tasks, demonstra
 
 ## Gossip, State, History {#gossip-state-history}
 
-A handful of core JSON-RPC methods require data from the Ethereum network, and fall neatly into three main categories: _Gossip, State, and History_
-* Use the links in these sections to jump to each method, or use the table of contents to explore the whole list of methods.
+* core JSON-RPC methods
+  * require Ethereum network's data
+  * main categories
 
 ### Gossip Methods {#gossip-methods}
 
-> These methods track the head of the chain
-* This is how transactions make their way around the network, find their way into blocks, and how clients find out about new blocks.
+* methods / 
+  * track chain's head
+  * uses
+    * transactions make their way around the network
+    * find their way | blocks
+    * clients find out about NEW blocks
 
 - [eth_blockNumber](#eth_blocknumber)
 - [eth_sendRawTransaction](#eth_sendrawtransaction)
 
 ### State Methods {#state_methods}
 
-> Methods that report the current state of all the data stored
-* The "state" is like one big shared piece of RAM, and includes account balances, contract data, and gas estimations.
+* methods / 
+  * report ALL data stored's CURRENT state
+
+* ALL data stored's state 
+  * == big shared piece of RAM
+  * == account balances + contract data + gas estimations
 
 - [eth_getBalance](#eth_getbalance)
 - [eth_getStorageAt](#eth_getstorageat)
@@ -314,8 +358,9 @@ A handful of core JSON-RPC methods require data from the Ethereum network, and f
 
 ### History Methods {#history_methods}
 
-> Fetches historical records of every block back to genesis
-* This is like one large append-only file, and includes all block headers, block bodies, uncle blocks, and transaction receipts.
+* fetches historical records 
+  * == [genesis block, CURRENT blocks]
+  * == ALL block headers + block bodies + uncle blocks + transaction receipts
 
 - [eth_getBlockTransactionCountByHash](#eth_getblocktransactioncountbyhash)
 - [eth_getBlockTransactionCountByNumber](#eth_getblocktransactioncountbynumber)
@@ -330,10 +375,14 @@ A handful of core JSON-RPC methods require data from the Ethereum network, and f
 - [eth_getUncleByBlockHashAndIndex](#eth_getunclebyblockhashandindex)
 - [eth_getUncleByBlockNumberAndIndex](#eth_getunclebyblocknumberandindex)
 
-## JSON-RPC API Playground
+## [JSON-RPC API Playground](https://ethereum-json-rpc.com)
 
-You can use the [playground tool](https://ethereum-json-rpc.com) to discover and try out the API methods
-* It also shows you which methods and networks are supported by various node providers.
+* allows
+  * about API methods,
+    * discover
+    * try out 
+  * about API methods & networks,
+    * display SUPPORTED / various node providers
 
 ## JSON-RPC API Methods {#json-rpc-methods}
 
