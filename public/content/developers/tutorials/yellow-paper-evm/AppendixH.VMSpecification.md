@@ -27,6 +27,15 @@
 * `O`
   * == EVM state-progression function
 
+* `σ′` & `µ′`
+  * == terms / pertain to the NEXT cycle’s state
+
+* ALL arithmetic
+  * == modulo 2256 
+    * OTHERWISE, noted
+* `0^0`
+  * := 1
+
 * `0`
   * EXCEPTIONs | state transition rules
   * `0x0*`
@@ -42,6 +51,10 @@
     * block information
   * `0x5*`
     * Stack, Memory, Storage and Flow Operations
+    * TODO:
+    * `0x55`
+      * `SSTORE`
+      * := save word | storage
   * `0x6*` & `0x7*`
     * push operations
   * `0x8*`
@@ -52,3 +65,13 @@
     * logging operations
   * `0xf*`
     * system operations
+    * TODO:
+    * `0xf3`
+      * `RETURN`
+      * == Halt execution / return output data
+    * TODO:
+    * `0xfd`
+      * `REVERT`
+      * == Halt execution / revert state changes & return data & remaining gas
+      * see `X()`
+    * TODO:
