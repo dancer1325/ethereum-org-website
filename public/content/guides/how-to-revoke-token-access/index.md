@@ -6,68 +6,88 @@ lang: en
 
 # How to revoke smart contract access to your crypto funds
 
-This guide will teach you how to view a list of all [smart contracts](/glossary/#smart-contract) you have allowed access to your funds and how to cancel them.
+* goal
+  * how to manage (add, cancel, view, ...) [smart contracts](/glossary/#smart-contract) / have access -- to -- your funds
 
-Sometimes malicious developers build backdoors into smart contracts that allow access to the funds of unaware users who interact with the smart contract. What often happens is that such platforms ask the user for permission to spend an **unlimited number of tokens** in an attempt to save small amounts of [gas](/glossary/#gas) in the future, but this comes with increased risk.
+* malicious developers
+  * build backdoors | smart contracts /
+    * allow access -- to the -- unaware users' funds 
 
-Once a platform has unlimited access rights to a token on your [wallet](/glossary/#wallet), they can spend all those tokens even if you have withdrawn your funds from their platform into your wallet. Malicious actors can still access your funds and withdraw them into their wallets with no recovery option left for you.
-
-The only protections are to refrain from using untested new projects, only approve what you need, or regularly revoke access. So, how do you do that?
+* if a platform has UNLIMITED access rights to a token | your [wallet](/glossary/#wallet) -> they can spend ALL those tokens
 
 ## Step 1: Use revoke access tools
 
-Several websites let you view and revoke smart contracts connected to your address. Visit the website and connect your wallet:
+* websites / 
+  * let you 
+    * view smart contracts -- connected to -- your address
+    * revoke smart contracts -- connected to -- your address
+  * _Example:_
+    - [Ethallowance](https://ethallowance.com/) (Ethereum)
+    - [Etherscan](https://etherscan.io/tokenapprovalchecker) (Ethereum)
+    - [Cointool](https://cointool.app/approve/eth) (multiple networks)
+    - [Revoke](https://revoke.cash/) (multiple networks)
+    - [Unrekt](https://app.unrekt.net/) (multiple networks)
+    - [EverRevoke](https://everrise.com/everrevoke/) (multiple networks)
 
-- [Ethallowance](https://ethallowance.com/) (Ethereum)
-- [Etherscan](https://etherscan.io/tokenapprovalchecker) (Ethereum)
-- [Cointool](https://cointool.app/approve/eth) (multiple networks)
-- [Revoke](https://revoke.cash/) (multiple networks)
-- [Unrekt](https://app.unrekt.net/) (multiple networks)
-- [EverRevoke](https://everrise.com/everrevoke/) (multiple networks)
+* steps
+  * visit the website
+  * connect your wallet
 
 ## Step 2: Connect your wallet
 
-Once you are on the website, click on “Connect wallet”. The website should prompt you to connect your wallet.
+* | website,
+  * click on “Connect wallet”
+    * display ALL contracts / are ALLOWED access -- to -- 
+      * your tokens
+      * their spending limit 
+  * check network | your wallet == network | website
+    * -> ONLY display smart contracts / related -- to the -- network selected
 
-Make sure you use the same network in your wallet and website. You will only see smart contracts related to the network selected. For example, if you connect to Ethereum Mainnet, you will only see Ethereum contracts, not contracts from other chains such as Polygon.
+## Step 3: Select a smart contract / you wish to revoke
 
-## Step 3: Select a smart contract you wish to revoke
+* ALLOWED to revoke
+  * 1!
+  * ALL of them
 
-You should see all the contracts that are allowed access to your tokens and their spending limit. Find the one you wish to terminate.
-
-If you do not know which contract to choose, you can revoke all of them. It won't create any problems for you, but you will have to grant a new set of permissions the next time you interact with any of these contracts.
+* if NEXT time you want to interact with those contracts -> you will have to grant a NEW set of permissions 
 
 ## Step 4: Revoke access to your funds
 
-Once you click on revoke, you should see a new transaction suggestion in your wallet. This is to be expected. You will have to pay the fee for the cancellation to be successful. Depending on the network this can take from a minute to several to be processed.
+* | click on revoke
+  * ⚠️NEW transaction suggestion | your wallet⚠️
+    * Reason: 🧠you have to pay the fee -- for the -- cancellation🧠
+    * it can take -- , based on the network, --  [1', SEVERAL ']
+      * recommendations
+        * refresh the revoking tool
 
-We advise you to refresh the revoking tool after a few minutes and connect your wallet again to double check if the revoked contract has disappeared from the list.
-
-<mark>We recommend you never allow projects unlimited access to your tokens and revoke all token allowance access regularly. Revoking token access should never result in a loss of funds, especially if you use the tools listed above.</mark>
-
- <br />
-
-<InfoBanner shouldSpaceBetween emoji=":eyes:">
-  <div>Want to learn more?</div>
-  <ButtonLink href="/guides/">
-    See our other guides
-  </ButtonLink>
-</InfoBanner>
+* recommendations
+  * NEVER ALLOW projects UNLIMITED access -- to -- your tokens
+  * revoke ALL token ALLOWANCE access REGULARLY
 
 ## Frequently asked questions
 
-### Does revoking token access also terminate staking, pooling, lending etc?
+### Does revoking token access -> terminate staking, pooling, lending etc?
 
-No, it will not affect any of your [DeFi](/glossary/#defi) strategies. You will remain in your positions and keep getting rewards etc.
+* ❌NOT❌
+  * == NOT affect your [DeFi](/glossary/#defi) strategies
 
-### Is disconnecting a wallet from a project the same as removing permission to use my funds?
+### disconnect a wallet -- from a -- project == remove permission to use my funds?
 
-No, if you disconnect your wallet from the project, but you've granted token allowance permissions, they can still use those tokens. You need to revoke that access.
+* ❌NOT❌
+  * ALTHOUGH you disconnect your wallet -- from the -- project BUT STILL grant token ALLOWANCE permissions -> they can STILL use those tokens
+    * == you need to revoke that access
 
 ### When will the contract permission expire?
 
-There are no expiration dates on contract permissions. If you grant contract permissions, they can be used, even years after they're granted.
+* ❌NO EXIST expiration dates❌ 
+  * == if you grant contract permissions -> they can be used EVEN years AFTER
 
-### Why do projects set unlimited token allowance?
+### Why do projects set UNLIMITED token allowance?
 
-Projects often do this to minimize the number of requests required, meaning the user only has to approve once and pay the transaction fee only once. While convenient, this can be dangerous for users to approve carelessly, on sites that are not proven with time or audited. Some wallets allow you to manually restrict the amount of tokens being approved to limit your risk. Check with your wallet provider for more information.
+* minimize the NUMBER of requests REQUIRED
+  * == user ONLY has to 
+    * approve 1!
+    * pay the transaction fee 1!
+
+* SOME wallets
+  * MANUALLY restrict the amount of tokens being approved
