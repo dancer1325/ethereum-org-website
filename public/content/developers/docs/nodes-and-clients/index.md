@@ -40,7 +40,7 @@ sidebarDepth: 2
 
 * execution client  
   * or Execution Engine or EL client or Eth1 client
-  * in charge of
+  * responsible for
     * listening to NEW transactions broadcasted | network,
     * executing transactions | EVM,
     * holds of ALL current Ethereum data
