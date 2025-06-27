@@ -16,16 +16,13 @@ sidebarDepth: 2
 
 * network
   * == set of nodes / connected
-* "node"
+* Ethereum "node"
   * == Ethereum client software's instance / connected -- to -- OTHER computers / ALSO run Ethereum software
   * requirements
-    * 👀run 2 clients👀/
+    * ⭐️run consensus client + execution client⭐️/
       * work together -- to --
         * keep track of the Ethereum chain's head
         * enable users -- to interact with the -- Ethereum network
-      * are
-        * consensus client
-        * execution client 
       * have [encapsulated complexity](https://vitalik.eth.limo/general/2022/02/28/complexity.html)
       * 💡made easier 💡
         * execute [The Merge](/ethereum-org-website/public/content/roadmap/merge) 

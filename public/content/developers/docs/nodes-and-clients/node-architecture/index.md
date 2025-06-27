@@ -32,7 +32,7 @@ lang: en
   * drives the execution client -- via the -- [Engine API](https://github.com/ethereum/execution-apis/blob/main/src/engine/common.md)
     * == local RPC connection  
   * uses
-    * if a node is selected as block producer -> its consensus client instance requests bundles of transactions -- from the -- execution client
+    * 💡if a node is selected as block producer -> its consensus client instance requests bundles of transactions -- from the -- execution client💡
       * Reason:🧠 
         * include | NEW block
         * execute them -- to -- update the global state🧠
