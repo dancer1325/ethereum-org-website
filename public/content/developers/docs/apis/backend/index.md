@@ -4,72 +4,76 @@ description: An introduction to the Ethereum client APIs that let you interact w
 lang: en
 ---
 
-In order for a software application to interact with the Ethereum blockchain (i.e. read blockchain data and/or send transactions to the network), it must connect to an Ethereum node.
-
-For this purpose, every Ethereum client implements the [JSON-RPC](/developers/docs/apis/json-rpc/) specification, so there is a uniform set of [methods](/developers/docs/apis/json-rpc/#json-rpc-methods) that applications can rely on.
-
-If you want to use a specific programming language to connect with an Ethereum node, there are many convenience libraries within the ecosystem that make this much easier. With these libraries, developers can write intuitive, one-line methods to initialize JSON-RPC requests (under the hood) that interact with Ethereum.
-
-## Prerequisites {#prerequisites}
-
-It might be helpful to understand the [Ethereum stack](/developers/docs/ethereum-stack/) and [Ethereum clients](/developers/docs/nodes-and-clients/).
+* goal
+  * libraries /
+    * enable you INTUITIVELY -- to -- initialize JSON-RPC requests / interact with Ethereum
 
 ## Why use a library? {#why-use-a-library}
 
-These libraries abstract away much of the complexity of interacting directly with an Ethereum node. They also provide utility functions (e.g. converting ETH to Gwei) so as a developer you can spend less time dealing with the intricacies of Ethereum clients and more time focused on the unique functionality of your application.
+* abstract away much of the complexity of interacting DIRECTLY -- with an -- Ethereum node
+* provide utility functions 
+  * _Example:_ converting ETH -- to -- Gwei
+  * == focus | your application's unique functionality
 
 ## Available libraries {#available-libraries}
 
 ### Infrastructure and node services {#infrastructure-and-node-services}
 
-**Alchemy -** **_Ethereum Development Platform._**
-
-- [alchemy.com](https://www.alchemy.com/)
-- [Documentation](https://docs.alchemy.com/)
-- [GitHub](https://github.com/alchemyplatform)
-- [Discord](https://discord.com/invite/alchemyplatform)
+* **Alchemy**
+  * == Ethereum Development Platform
+  - [alchemy.com](https://www.alchemy.com/)
+  - [Documentation](https://docs.alchemy.com/)
+  - [GitHub](https://github.com/alchemyplatform)
+  - [Discord](https://discord.com/invite/alchemyplatform)
   
-**All That Node -** **_Node-as-a-Service._**
+* **All That Node**
+  * == Node-as-a-Service
+  - [All That Node.com](https://www.allthatnode.com/)
+  - [Documentation](https://docs.allthatnode.com)
+  - [Discord](https://discord.gg/GmcdVEUbJM)
 
-- [All That Node.com](https://www.allthatnode.com/)
-- [Documentation](https://docs.allthatnode.com)
-- [Discord](https://discord.gg/GmcdVEUbJM)
+* **Blast by Bware Labs**
+  * provide
+    * decentralized APIs | Ethereum Mainnet & Testnets
+  - [blastapi.io](https://blastapi.io/)
+  - [Documentation](https://docs.blastapi.io)
+  - [Discord](https://discord.gg/bwarelabs)
 
-**Blast by Bware Labs -** **_Decentralized APIs for Ethereum Mainnet and Testnets._**
+* **BlockPi**
+  * provide
+    * RPC services
+      * MORE efficient
+      * faster
+  - [blockpi.io](https://blockpi.io/)
+  - [Documentation](https://docs.blockpi.io/)
+  - [GitHub](https://github.com/BlockPILabs)
+  - [Discord](https://discord.com/invite/xTvGVrGVZv)
 
-- [blastapi.io](https://blastapi.io/)
-- [Documentation](https://docs.blastapi.io)
-- [Discord](https://discord.gg/bwarelabs)
+* **Cloudflare Ethereum Gateway.**
+  - [cloudflare-eth.com](https://www.cloudflare.com/application-services/products/web3/)
 
-**BlockPi -** **_Provide more efficient and fast RPC services_**
+* **Etherscan**
+  * provides
+    * Block Explorer
+    * Transaction APIs
+  - [Documentation](https://docs.etherscan.io/)
 
-- [blockpi.io](https://blockpi.io/)
-- [Documentation](https://docs.blockpi.io/)
-- [GitHub](https://github.com/BlockPILabs)
-- [Discord](https://discord.com/invite/xTvGVrGVZv)
+* **GetBlock**
+  * == Blockchain-as-a-service -- for -- Web3 development
+  - [GetBlock.io](https://getblock.io/)
+  - [Documentation](https://getblock.io/docs/)
 
-**Cloudflare Ethereum Gateway.**
+* **Infura**
+  * == Ethereum API as a service
+  - [infura.io](https://infura.io)
+  - [Documentation](https://docs.infura.io/api)
+  - [GitHub](https://github.com/INFURA)
 
-- [cloudflare-eth.com](https://www.cloudflare.com/application-services/products/web3/)
-
-**Etherscan - Block Explorer and Transaction APIs**
-- [Documentation](https://docs.etherscan.io/)
-
-**GetBlock-** **_Blockchain-as-a-service for Web3 development_**
-
-- [GetBlock.io](https://getblock.io/)
-- [Documentation](https://getblock.io/docs/)
-
-**Infura -** **_The Ethereum API as a service._**
-
-- [infura.io](https://infura.io)
-- [Documentation](https://docs.infura.io/api)
-- [GitHub](https://github.com/INFURA)
-
-**Node RPC - _Cost-effective EVM JSON-RPC provider_**
-
-- [noderpc.xyz](https://www.noderpc.xyz/)
-- [Documentation](https://docs.noderpc.xyz/node-rpc)
+* **Node RPC**
+  * == EVM JSON-RPC provider
+    * Cost-effective
+  - [noderpc.xyz](https://www.noderpc.xyz/)
+  - [Documentation](https://docs.noderpc.xyz/node-rpc)
 
 **NOWNodes - _Full Nodes and Block Explorers._**
 
@@ -97,23 +101,26 @@ These libraries abstract away much of the complexity of interacting directly wit
 
 ### Development tools {#development-tools}
 
-**ethers-kt -** **_Async, high-performance Kotlin/Java/Android library for EVM-based blockchains._**
+* **ethers-kt**
+  * Kotlin/Java/Android library -- for -- EVM-based blockchains
+    * async,
+    * high-performance
+  - [GitHub](https://github.com/Kr1ptal/ethers-kt)
+  - [Examples](https://github.com/Kr1ptal/ethers-kt/tree/master/examples)
+  - [Discord](https://discord.gg/rx35NzQGSb)
 
-- [GitHub](https://github.com/Kr1ptal/ethers-kt)
-- [Examples](https://github.com/Kr1ptal/ethers-kt/tree/master/examples)
-- [Discord](https://discord.gg/rx35NzQGSb)
+* **Nethereum**
+  * .NET integration library -- for -- blockchain
+    * open source
+  - [GitHub](https://github.com/Nethereum/Nethereum)
+  - [Documentation](http://docs.nethereum.com/en/latest/)
+  - [Discord](https://discord.com/invite/jQPrR58FxX)
 
-**Nethereum -** **_An open source .NET integration library for blockchain._**
-
-- [GitHub](https://github.com/Nethereum/Nethereum)
-- [Documentation](http://docs.nethereum.com/en/latest/)
-- [Discord](https://discord.com/invite/jQPrR58FxX)
-
-**Python Tooling -** **_Variety of libraries for Ethereum interaction via Python._**
-
-- [py.ethereum.org](https://python.ethereum.org/)
-- [web3.py GitHub](https://github.com/ethereum/web3.py)
-- [web3.py Chat](https://gitter.im/ethereum/web3.py)
+* **Python Tooling**
+  * == librarieS -- for interacting with -- Ethereum
+  - [py.ethereum.org](https://python.ethereum.org/)
+  - [web3.py GitHub](https://github.com/ethereum/web3.py)
+  - [web3.py Chat](https://gitter.im/ethereum/web3.py)
 
 **Tatum -** **_The ultimate blockchain development platform._**
 
@@ -122,11 +129,11 @@ These libraries abstract away much of the complexity of interacting directly wit
 - [Documentation](https://docs.tatum.io/)
 - [Discord](https://discord.gg/EDmW3kjTC9)
 
-**web3j -** **_A Java/Android/Kotlin/Scala integration library for Ethereum._**
-
-- [GitHub](https://github.com/web3j/web3j)
-- [Docs](https://docs.web3j.io/)
-- [Gitter](https://gitter.im/web3j/web3j)
+* **web3j**
+  * Java/Android/Kotlin/Scala integration library -- for -- Ethereum
+  - [GitHub](https://github.com/web3j/web3j)
+  - [Docs](https://docs.web3j.io/)
+  - [Gitter](https://gitter.im/web3j/web3j)
 
 ### Blockchain services {#blockchain-services}
 
@@ -190,11 +197,6 @@ These libraries abstract away much of the complexity of interacting directly wit
 - [Documentation](https://www.covalenthq.com/docs/api/)
 - [GitHub](https://github.com/covalenthq)
 - [Discord](https://www.covalenthq.com/discord/)
-
-
-## Further reading {#further-reading}
-
-_Know of a community resource that helped you? Edit this page and add it!_
 
 ## Related topics {#related-topics}
 
