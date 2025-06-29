@@ -255,80 +255,75 @@ lang: en
     * determine the address | our contract is deployed
       * retrieve the transaction's receipt -- via -- `eth_getTransactionReceipt`
 
-  ```bash
-  curl --data '{"jsonrpc":"2.0","method": "eth_getTransactionReceipt", "params": ["0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"], "id": 7}' -H "Content-Type: application/json" localhost:8545
-  {"jsonrpc":"2.0","id":7,"result":{"blockHash":"0x77b1a4f6872b9066312de3744f60020cbd8102af68b1f6512a05b7619d527a4f","blockNumber":"0x1","contractAddress":"0x4d03d617d700cf81935d7f797f4e2ae719648262","cumulativeGasUsed":"0x1c31e","from":"0x9b1d35635cc34752ca54713bb99d38614f63c955","gasUsed":"0x1c31e","logs":[],"logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","status":"0x1","to":null,"transactionHash":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf","transactionIndex":"0x0"}}
-  ```
-
-Our contract was created on `0x4d03d617d700cf81935d7f797f4e2ae719648262`
-* A null result instead of a receipt means the transaction has not been included in a block yet
-* Wait for a moment and check if your consensus client is running and retry it.
+      ```bash
+      curl --data '{"jsonrpc":"2.0","method": "eth_getTransactionReceipt", "params": ["0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"], "id": 7}' -H "Content-Type: application/json" localhost:8545
+      {"jsonrpc":"2.0","id":7,"result":{"blockHash":"0x77b1a4f6872b9066312de3744f60020cbd8102af68b1f6512a05b7619d527a4f","blockNumber":"0x1","contractAddress":"0x4d03d617d700cf81935d7f797f4e2ae719648262","cumulativeGasUsed":"0x1c31e","from":"0x9b1d35635cc34752ca54713bb99d38614f63c955","gasUsed":"0x1c31e","logs":[],"logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","status":"0x1","to":null,"transactionHash":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf","transactionIndex":"0x0"}}
+      ```
 
 ##### Interacting with smart contracts {#interacting-with-smart-contract}
 
-In this example we will be sending a transaction using `eth_sendTransaction` to the `multiply` method of the contract.
+* goal
+  * send a transaction -- , via `eth_sendTransaction`, to the -- contract's `multiply` method
 
-`eth_sendTransaction` requires several arguments, specifically `from`, `to` and `data`
-* `From` is the public address of our account, and `to` is the contract address
-* The `data` argument contains a payload that defines which method must be called and with which arguments
-* This is where the [ABI (application binary interface)](https://docs.soliditylang.org/en/latest/abi-spec.html) comes into play
-* The ABI is a JSON file that defines how to define and encode data for the EVM.
+  ```javascript
+  web3.sha3("multiply(uint256)").substring(0, 10)
+  // "0xc6888fa1"
+  ```
 
-The bytes of the payload defines which method in the contract is called
-* This is the first 4 bytes from the Keccak hash over the function name and its argument types, hex encoded. The multiply function accepts an uint which is an alias for uint256. This leaves us with:
+* steps
+  * encode the arguments
+    * there is ONLY 1 uint256
+      * _Example:_ let's say 6
+    * [how to encode uint256 types](https://docs.soliditylang.org/en/latest/abi-spec.html)
+    * `int<M>: enc(X)`
+      * big-endian 2’s complement encoding of X
+      * padded | higher-order (left) side 
+        * -- with --
+          * 0xff -- for -- negative X 
+          * zero > bytes -- for -- positive X
+        * length == 32* bytes (== MULTIPLE of 32 bytes)
+        * encodes to `0000000000000000000000000000000000000000000000000000000000000006`
+    * function selector + encoded argument -> `0xc6888fa10000000000000000000000000000000000000000000000000000000000000006`
+  * send -- to the -- node
 
-```javascript
-web3.sha3("multiply(uint256)").substring(0, 10)
-// "0xc6888fa1"
-```
+      ```bash
+      curl --data '{"jsonrpc":"2.0","method": "eth_sendTransaction", "params": [{"from": "0xeb85a5557e5bdc18ee1934a89d8bb402398ee26a", "to": "0x6ff93b4b46b41c0c3c9baee01c255d3b4675963d", "data": "0xc6888fa10000000000000000000000000000000000000000000000000000000000000006"}], "id": 8}' -H "Content-Type: application/json" localhost:8545
+      {"id":8,"jsonrpc":"2.0","result":"0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74"}    # request object == transaction -> response.result == transaction's hash
+      ```
+  * retrieve the receipt
 
-The next step is to encode the arguments. There is only one uint256, say, the value 6. The ABI has a section which specifies how to encode uint256 types.
+      ```javascript
+      {
+        blockHash: "0xbf0a347307b8c63dd8c1d3d7cbdc0b463e6e7c9bf0a35be40393588242f01d55",
+        blockNumber: 268,
+        contractAddress: null,
+        cumulativeGasUsed: 22631,
+        gasUsed: 22631,
+        logs: [{
+            address: "0x6ff93b4b46b41c0c3c9baee01c255d3b4675963d",
+            blockHash: "0xbf0a347307b8c63dd8c1d3d7cbdc0b463e6e7c9bf0a35be40393588242f01d55",
+            blockNumber: 268,
+            data: "0x000000000000000000000000000000000000000000000000000000000000002a",
+            logIndex: 0,
+            topics: ["0x24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da"],
+            transactionHash: "0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74",
+            transactionIndex: 0
+        }],
+        transactionHash: "0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74",
+        transactionIndex: 0
+      }
+      ```
+    * 's log
+      * was generated -- by the -- EVM | transaction execution
+    * `Multiply7.multiply()` function
+      * `Print`'s argument == uint256 -> we can decode it -- via -- ABI rules
+      * topics can be used -- to determine -- the event / created the log
 
-`int<M>: enc(X)` is the big-endian two’s complement encoding of X, padded on the higher-order (left) side with 0xff for negative X and with zero > bytes for positive X such that the length is a multiple of 32 bytes.
+      ```javascript
+      web3.sha3("Print(uint256)")
+      // "24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da"
+      ```
 
-This encodes to `0000000000000000000000000000000000000000000000000000000000000006`.
-
-Combining the function selector and the encoded argument our data will be `0xc6888fa10000000000000000000000000000000000000000000000000000000000000006`.
-
-This can now be sent to the node:
-
-```bash
-curl --data '{"jsonrpc":"2.0","method": "eth_sendTransaction", "params": [{"from": "0xeb85a5557e5bdc18ee1934a89d8bb402398ee26a", "to": "0x6ff93b4b46b41c0c3c9baee01c255d3b4675963d", "data": "0xc6888fa10000000000000000000000000000000000000000000000000000000000000006"}], "id": 8}' -H "Content-Type: application/json" localhost:8545
-{"id":8,"jsonrpc":"2.0","result":"0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74"}
-```
-
-Since a transaction was sent, a transaction hash was returned. Retrieving the receipt gives:
-
-```javascript
-{
-   blockHash: "0xbf0a347307b8c63dd8c1d3d7cbdc0b463e6e7c9bf0a35be40393588242f01d55",
-   blockNumber: 268,
-   contractAddress: null,
-   cumulativeGasUsed: 22631,
-   gasUsed: 22631,
-   logs: [{
-      address: "0x6ff93b4b46b41c0c3c9baee01c255d3b4675963d",
-      blockHash: "0xbf0a347307b8c63dd8c1d3d7cbdc0b463e6e7c9bf0a35be40393588242f01d55",
-      blockNumber: 268,
-      data: "0x000000000000000000000000000000000000000000000000000000000000002a",
-      logIndex: 0,
-      topics: ["0x24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da"],
-      transactionHash: "0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74",
-      transactionIndex: 0
-  }],
-  transactionHash: "0x759cf065cbc22e9d779748dc53763854e5376eea07409e590c990eafc0869d74",
-  transactionIndex: 0
-}
-```
-
-The receipt contains a log. This log was generated by the EVM on transaction execution and included in the receipt. The `multiply` function shows that the `Print` event was raised with the input times 7. Since the argument for the `Print` event was a uint256 we can decode it according to the ABI rules which will leave us with the expected decimal 42. Apart from the data it is worth noting that topics can be used to determine which event created the log:
-
-```javascript
-web3.sha3("Print(uint256)")
-// "24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da"
-```
-
-This was just a brief introduction into some of the most common tasks, demonstrating direct usage of the JSON-RPC.
 
 ## Gossip, State, History {#gossip-state-history}
 
@@ -396,57 +391,56 @@ This was just a brief introduction into some of the most common tasks, demonstra
 
 ### web3_clientVersion {#web3_clientversion}
 
-Returns the current client version.
+* returns the CURRENT client version
 
-**Parameters**
+* **Parameters**
+  * None
 
-None
+* **Returns**
+  * `String`
+  * CURRENT client version
 
-**Returns**
-
-`String` - The current client version
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}'
-// Result
-{
-  "id":67,
-  "jsonrpc":"2.0",
-  "result": "Geth/v1.12.1-stable/linux-amd64/go1.19.1"
-}
-```
+* _Example:_
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}'
+  // Result
+  {
+    "id":67,
+    "jsonrpc":"2.0",
+    "result": "Geth/v1.12.1-stable/linux-amd64/go1.19.1"
+  }
+  ```
 
 ### web3_sha3 {#web3_sha3}
 
-Returns Keccak-256 (_not_ the standardized SHA3-256) of the given data.
+* returns given data's Keccak-256
+  * != standardized SHA3-256 
 
-**Parameters**
+* **Parameters**
+  1. `DATA`
+     * data -- , to convert into a -- SHA3 hash
 
-1. `DATA` - The data to convert into a SHA3 hash
+  ```js
+  params: ["0x68656c6c6f20776f726c64"]
+  ```
 
-```js
-params: ["0x68656c6c6f20776f726c64"]
-```
+* **Returns**
+  1. `DATA`
+     * SHA3 result
 
-**Returns**
+* _Example:_
 
-`DATA` - The SHA3 result of the given string.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"web3_sha3","params":["0x68656c6c6f20776f726c64"],"id":64}'
-// Result
-{
-  "id":64,
-  "jsonrpc": "2.0",
-  "result": "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad"
-}
-```
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"web3_sha3","params":["0x68656c6c6f20776f726c64"],"id":64}'
+  // Result
+  {
+    "id":64,
+    "jsonrpc": "2.0",
+    "result": "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad"
+  }
+  ```
 
 ### net_version {#net_version}
 
@@ -1193,10 +1187,10 @@ curl -X POST --data '{"id": 1,"jsonrpc": "2.0","method": "eth_signTransaction","
 * creates 
   * NEW message call transaction OR
     * requirements
-      * `data` has code -- TODO: ❓ --
+      * `data` argument
   * NEW contract
     * requirements
-    * sign the transaction -- via -- the account / specified | `from`
+      * sign the transaction -- via -- the account / specified | `from`
 
 * **Parameters**
   1. `Object`
@@ -1246,6 +1240,7 @@ curl -X POST --data '{"id": 1,"jsonrpc": "2.0","method": "eth_signTransaction","
       value: "0x9184e72a", // 2441406250
       input:
         "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675",
+      "data": "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"  
     },
   ]
   ```
