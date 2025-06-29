@@ -139,19 +139,20 @@ lang: en
 
 * requests / act | state of Ethereum -> block's height -- is determined by the -- last default block parameter 
 
-* options / defaultBlock parameter
-  - `HEX String`
-    - integer block number
-  - `String "earliest"`
-    - for the earliest/genesis block
-  - `String "latest"`
-    - for the latest proposed block
-  - `String "safe"`
-    - for the latest safe head block
-  - `String "finalized"`
-    - for the latest finalized block
-  - `String "pending"`
-    - for the pending state/transactions
+* defaultBlock parameter
+  * 👀ALLOWED👀
+    - `HEX String`
+      - integer block number
+    - `String "earliest"`
+      - for the earliest/genesis block
+    - `String "latest"`
+      - for the latest proposed block
+    - `String "safe"`
+      - for the latest safe head block
+    - `String "finalized"`
+      - for the latest finalized block
+    - `String "pending"`
+      - for the pending state/transactions
 
 ## Examples
 
@@ -180,94 +181,101 @@ lang: en
 
 #### Deploying a contract -- via -- JSON_RPC {#deploying-contract}
 
-* TODO: This section includes a demonstration of how to deploy a contract using only the RPC interface
-* There are alternative routes to deploying contracts where this complexity is abstracted away—for example, using libraries built on top of the RPC interface such as [web3.js](https://web3js.readthedocs.io/) and [web3.py](https://github.com/ethereum/web3.py)
-* These abstractions are generally easier to understand and less error-prone, but it is still helpful to understand what is happening under the hood.
+* goal
+  * how to deploy a contract -- via -- RPC interface
+    * assumptions
+      * reader is ALREADY running a Geth node -- MOST client serve | "localhost:8545" 
+        * check HTTP RPC interface is enabled
+          * == -- via -- `geth --http`
+          * `geth --http --dev console 2>>geth.log` -- check logs -- 
 
-The following is a straightforward smart contract called `Multiply7` that will be deployed using the JSON-RPC interface to an Ethereum node
-* This tutorial assumes the reader is already running a Geth node
-* More information on nodes and clients is available [here](/developers/docs/nodes-and-clients/run-a-node)
-* Please refer to individual [client](/developers/docs/nodes-and-clients/) documentation to see how to start the HTTP JSON-RPC for non-Geth clients
-* Most clients default to serving on `localhost:8545`.
+* ways to deploy contracts
+  * RPC interface
+  * libraries built | RPC interface
+    * _Example:_ [web3.js](https://web3js.readthedocs.io/) & [web3.py](https://github.com/ethereum/web3.py)
 
-```javascript
-contract Multiply7 {
-    event Print(uint);
-    function multiply(uint input) returns (uint) {
-        Print(input * 7);
-        return input * 7;
-    }
-}
-```
+* _Example:_ smart contract / deployed -- via -- JSON-RPC interface
 
-The first thing to do is make sure the HTTP RPC interface is enabled. This means we supply Geth with the `--http` flag on startup. In this example we use the Geth node on a private development chain. Using this approach we don't need ether on the real network.
+  ```javascript
+  contract Multiply7 {
+      event Print(uint);
+      function multiply(uint input) returns (uint) {
+          Print(input * 7);
+          return input * 7;
+      }
+  }
+  ```
 
-```bash
-geth --http --dev console 2>>geth.log
-```
+  * steps
+    * | OUR private development chain, place SOME ether
+      ```bash
+      $ curl --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[]", "id":1}' -H "Content-Type: application/json" localhost:8545   # request object -- "eth_accounts"
+      {"id":1,"jsonrpc":"2.0","result":["0x9b1d35635cc34752ca54713bb99d38614f63c955"]}  # response object
+  
+      $ curl --data '{"jsonrpc":"2.0","method":"eth_getBalance", "params": ["0x9b1d35635cc34752ca54713bb99d38614f63c955", "latest"], "id":2}' -H "Content-Type: application/json" localhost:8545
+      {"id":2,"jsonrpc":"2.0","result":"0x1639e49bba16280000"}  # response object   `.result` in [wei]
+      ```
 
-This will start the HTTP RPC interface on `http://localhost:8545`.
+      * if we want to have the balance | [ether] -> | Geth console, use web3
+        ```javascript
+        web3.fromWei("0x1639e49bba16280000", "ether")
+        // "410"
+        ```
+    * compile the "Multiply7" contract -- to -- byte code
+      * Reason: 🧠send -- to the -- EVM🧠
+      * install [`solc`](https://docs.soliditylang.org/en/latest/installing-solidity.html)
 
-We can verify that the interface is running by retrieving the coinbase address (by obtaining the first address from the array of accounts) and balance using [curl](https://curl.se). Please note that data in these examples will differ on your local node. If you want to try these commands, replace the request params in the second curl request with the result returned from the first.
+      ```bash
+      echo 'pragma solidity ^0.4.16; contract Multiply7 { event Print(uint); function multiply(uint input) public returns (uint) { Print(input * 7); return input * 7; } }' | solc --bin
+      
+      ======= <stdin>:Multiply7 =======
+      Binary:
+      6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029
+      ```
+    * determine how MUCH gas / costs -- to -- deploy it
+      * -- via -- `eth_estimateGas` method
 
-```bash
-curl --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[]", "id":1}' -H "Content-Type: application/json" localhost:8545
-{"id":1,"jsonrpc":"2.0","result":["0x9b1d35635cc34752ca54713bb99d38614f63c955"]}
+      ```bash
+      curl --data '{"jsonrpc":"2.0","method": "eth_estimateGas", "params": [{"from": "0x9b1d35635cc34752ca54713bb99d38614f63c955", "data": "0x6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029"}], "id": 5}' -H "Content-Type: application/json" localhost:8545
+      {"jsonrpc":"2.0","id":5,"result":"0x1c31e"}     # response object
+      ```
+    * deploy the contract
+      * -- via -- `eth_sendTransaction` method
 
-curl --data '{"jsonrpc":"2.0","method":"eth_getBalance", "params": ["0x9b1d35635cc34752ca54713bb99d38614f63c955", "latest"], "id":2}' -H "Content-Type: application/json" localhost:8545
-{"id":2,"jsonrpc":"2.0","result":"0x1639e49bba16280000"}
-```
+      ```bash
+      curl --data '{"jsonrpc":"2.0","method": "eth_sendTransaction", "params": [{"from": "0x9b1d35635cc34752ca54713bb99d38614f63c955", "gas": "0x1c31e", "data": "0x6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029"}], "id": 6}' -H "Content-Type: application/json" localhost:8545
+      # TODO: | `eth_sendTransaction`, EXIST params.data?
+      {"id":6,"jsonrpc":"2.0","result":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"}    # result == transaction's hash
+      ```
+      * transaction hash 
+        * uses
+          * track the transaction
+      * 👀EACH transaction create a receipt👀
+        * receipt == transaction's information == block | transaction was included + gas / used by the EVM 
+    * determine the address | our contract is deployed
+      * retrieve the transaction's receipt -- via -- `eth_getTransactionReceipt`
 
-Because numbers are hex encoded, the balance is returned in wei as a hex string. If we want to have the balance in ether as a number we can use web3 from the Geth console.
+  ```bash
+  curl --data '{"jsonrpc":"2.0","method": "eth_getTransactionReceipt", "params": ["0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"], "id": 7}' -H "Content-Type: application/json" localhost:8545
+  {"jsonrpc":"2.0","id":7,"result":{"blockHash":"0x77b1a4f6872b9066312de3744f60020cbd8102af68b1f6512a05b7619d527a4f","blockNumber":"0x1","contractAddress":"0x4d03d617d700cf81935d7f797f4e2ae719648262","cumulativeGasUsed":"0x1c31e","from":"0x9b1d35635cc34752ca54713bb99d38614f63c955","gasUsed":"0x1c31e","logs":[],"logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","status":"0x1","to":null,"transactionHash":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf","transactionIndex":"0x0"}}
+  ```
 
-```javascript
-web3.fromWei("0x1639e49bba16280000", "ether")
-// "410"
-```
-
-Now that there is some ether on our private development chain, we can deploy the contract. The first step is to compile the Multiply7 contract to byte code that can be sent to the EVM. To install solc, the Solidity compiler, follow the [Solidity documentation](https://docs.soliditylang.org/en/latest/installing-solidity.html). (You might want to use an older `solc` release to match [the version of compiler used for our example](https://github.com/ethereum/solidity/releases/tag/v0.4.20).)
-
-The next step is to compile the Multiply7 contract to byte code that can be send to the EVM.
-
-```bash
-echo 'pragma solidity ^0.4.16; contract Multiply7 { event Print(uint); function multiply(uint input) public returns (uint) { Print(input * 7); return input * 7; } }' | solc --bin
-
-======= <stdin>:Multiply7 =======
-Binary:
-6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029
-```
-
-Now that we have the compiled code we need to determine how much gas it costs to deploy it. The RPC interface has an `eth_estimateGas` method that will give us an estimate.
-
-```bash
-curl --data '{"jsonrpc":"2.0","method": "eth_estimateGas", "params": [{"from": "0x9b1d35635cc34752ca54713bb99d38614f63c955", "data": "0x6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029"}], "id": 5}' -H "Content-Type: application/json" localhost:8545
-{"jsonrpc":"2.0","id":5,"result":"0x1c31e"}
-```
-
-And finally deploy the contract.
-
-```bash
-curl --data '{"jsonrpc":"2.0","method": "eth_sendTransaction", "params": [{"from": "0x9b1d35635cc34752ca54713bb99d38614f63c955", "gas": "0x1c31e", "data": "0x6060604052341561000f57600080fd5b60eb8061001d6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c6888fa1146044575b600080fd5b3415604e57600080fd5b606260048080359060200190919050506078565b6040518082815260200191505060405180910390f35b60007f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da600783026040518082815260200191505060405180910390a16007820290509190505600a165627a7a7230582040383f19d9f65246752244189b02f56e8d0980ed44e7a56c0b200458caad20bb0029"}], "id": 6}' -H "Content-Type: application/json" localhost:8545
-{"id":6,"jsonrpc":"2.0","result":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"}
-```
-
-The transaction is accepted by the node and a transaction hash is returned. This hash can be used to track the transaction. The next step is to determine the address where our contract is deployed. Each executed transaction will create a receipt. This receipt contains various information about the transaction such as in which block the transaction was included and how much gas was used by the EVM. If a transaction
-creates a contract it will also contain the contract address. We can retrieve the receipt with the `eth_getTransactionReceipt` RPC method.
-
-```bash
-curl --data '{"jsonrpc":"2.0","method": "eth_getTransactionReceipt", "params": ["0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf"], "id": 7}' -H "Content-Type: application/json" localhost:8545
-{"jsonrpc":"2.0","id":7,"result":{"blockHash":"0x77b1a4f6872b9066312de3744f60020cbd8102af68b1f6512a05b7619d527a4f","blockNumber":"0x1","contractAddress":"0x4d03d617d700cf81935d7f797f4e2ae719648262","cumulativeGasUsed":"0x1c31e","from":"0x9b1d35635cc34752ca54713bb99d38614f63c955","gasUsed":"0x1c31e","logs":[],"logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","status":"0x1","to":null,"transactionHash":"0xe1f3095770633ab2b18081658bad475439f6a08c902d0915903bafff06e6febf","transactionIndex":"0x0"}}
-```
-
-Our contract was created on `0x4d03d617d700cf81935d7f797f4e2ae719648262`. A null result instead of a receipt means the transaction has not been included in a block yet. Wait for a moment and check if your consensus client is running and retry it.
+Our contract was created on `0x4d03d617d700cf81935d7f797f4e2ae719648262`
+* A null result instead of a receipt means the transaction has not been included in a block yet
+* Wait for a moment and check if your consensus client is running and retry it.
 
 ##### Interacting with smart contracts {#interacting-with-smart-contract}
 
 In this example we will be sending a transaction using `eth_sendTransaction` to the `multiply` method of the contract.
 
-`eth_sendTransaction` requires several arguments, specifically `from`, `to` and `data`. `From` is the public address of our account, and `to` is the contract address. The `data` argument contains a payload that defines which method must be called and with which arguments. This is where the [ABI (application binary interface)](https://docs.soliditylang.org/en/latest/abi-spec.html) comes into play. The ABI is a JSON file that defines how to define and encode data for the EVM.
+`eth_sendTransaction` requires several arguments, specifically `from`, `to` and `data`
+* `From` is the public address of our account, and `to` is the contract address
+* The `data` argument contains a payload that defines which method must be called and with which arguments
+* This is where the [ABI (application binary interface)](https://docs.soliditylang.org/en/latest/abi-spec.html) comes into play
+* The ABI is a JSON file that defines how to define and encode data for the EVM.
 
-The bytes of the payload defines which method in the contract is called. This is the first 4 bytes from the Keccak hash over the function name and its argument types, hex encoded. The multiply function accepts an uint which is an alias for uint256. This leaves us with:
+The bytes of the payload defines which method in the contract is called
+* This is the first 4 bytes from the Keccak hash over the function name and its argument types, hex encoded. The multiply function accepts an uint which is an alias for uint256. This leaves us with:
 
 ```javascript
 web3.sha3("multiply(uint256)").substring(0, 10)
@@ -767,28 +775,26 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":7
 
 ### eth_accounts {#eth_accounts}
 
-Returns a list of addresses owned by client.
+* returns a list of addresses / owned -- by -- client
 
-**Parameters**
+* **Parameters**
+  * NONE
 
-None
+* **Returns**
+  * `[addresses]`
+    * 20 Bytes
 
-**Returns**
-
-`Array of DATA`, 20 Bytes - addresses owned by the client.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": ["0x407d73d8a49eeb85d32cf465507dd71d507100c1"]
-}
-```
+* _Example:_
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}'
+  // Result
+  {
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": ["0x407d73d8a49eeb85d32cf465507dd71d507100c1"]
+  }
+  ```
 
 ### eth_blockNumber {#eth_blocknumber}
 
@@ -817,22 +823,28 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id
 
 ### eth_getBalance {#eth_getbalance}
 
-Returns the balance of the account of given address.
+* returns account's balance
+  * -- based on -- given address
 
-**Parameters**
+* **Parameters**
+  1. `DATA`
+     1. address (20 Bytes) | check the balance
+  2. `QUANTITY|TAG`
+     1. ==
+        1. integer block number OR
+        2. string -- `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"` --
+           1. [default block parameter](/developers/docs/apis/json-rpc/#default-block)
 
-1. `DATA`, 20 Bytes - address to check for balance.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"`, see the [default block parameter](/developers/docs/apis/json-rpc/#default-block)
+  ```js
+  params: ["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "latest"]
+  ```
 
-```js
-params: ["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "latest"]
-```
+* **Returns**
+  * `QUANTITY`
+    * integer / [units] = wei
+    * CURRENT balance
 
-**Returns**
-
-`QUANTITY` - integer of the current balance in wei.
-
-**Example**
+* _Example:_
 
 ```js
 // Request
@@ -847,106 +859,111 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x407
 
 ### eth_getStorageAt {#eth_getstorageat}
 
-Returns the value from a storage position at a given address.
+* returns
+  * storage position's value --from a -- given address
 
-**Parameters**
+* **Parameters**
+  1. `DATA`
+     1. address (20 Bytes) | store
+  2. `QUANTITY`
+     1. integer
+     2. position | storage 
+  3. `QUANTITY|TAG`
+     1. ==
+        1. integer block number OR
+        2. string -- `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"` --
+           1. [default block parameter](/developers/docs/apis/json-rpc/#default-block)
 
-1. `DATA`, 20 Bytes - address of the storage.
-2. `QUANTITY` - integer of the position in the storage.
-3. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"`, `"pending"`, `"safe"`, `"finalized"`, see the [default block parameter](/developers/docs/apis/json-rpc/#default-block)
+* **Returns**
+  * `DATA`
+    * storage position's value
 
-**Returns**
+* _Example:_ contract 
+  * deployed | `0x295a70b2de5e3953354a6a8344e616ed314d7251`
+  * -- by -- address `0x391694e7e0b0cce554cb130d723a9d27458f9298`
 
-`DATA` - the value at this storage position.
+  ```
+  contract Storage {
+      uint pos0;
+      mapping(address => uint) pos1;
+      function Storage() {
+          pos0 = 1234;
+          pos1[msg.sender] = 5678;
+      }
+  }
+  ```
 
-**Example**
-Calculating the correct position depends on the storage to retrieve
-* Consider the following contract deployed at `0x295a70b2de5e3953354a6a8344e616ed314d7251` by address `0x391694e7e0b0cce554cb130d723a9d27458f9298`.
+  ```bash
+  $ curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": ["0x295a70b2de5e3953354a6a8344e616ed314d7251", "0x0", "latest"], "id": 1}' localhost:8545
+  {"jsonrpc":"2.0","id":1,"result":"0x00000000000000000000000000000000000000000000000000000000000004d2"}    # response object
+  ```
 
-```
-contract Storage {
-    uint pos0;
-    mapping(address => uint) pos1;
-    function Storage() {
-        pos0 = 1234;
-        pos1[msg.sender] = 5678;
-    }
-}
-```
+  * if you want to retrieve a map's element -> steps
+    * calculate the position of the element | map
+      * ways
+        * `keccak(LeftPad32(key, 0), LeftPad32(map position, 0))`
+          * _Example:_ to retrieve the storage | pos1["0x391694e7e0b0cce554cb130d723a9d27458f9298"] -> calculate the position with
 
-Retrieving the value of pos0 is straight forward:
+            ```js
+            keccak(
+              decodeHex(
+                "000000000000000000000000391694e7e0b0cce554cb130d723a9d27458f9298" +
+                  "0000000000000000000000000000000000000000000000000000000000000001"
+              )
+            )
+            ```
+        * geth console / built-in with web3 library
 
-```js
-curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": ["0x295a70b2de5e3953354a6a8344e616ed314d7251", "0x0", "latest"], "id": 1}' localhost:8545
-{"jsonrpc":"2.0","id":1,"result":"0x00000000000000000000000000000000000000000000000000000000000004d2"}
-```
+          ```js
+        > var key = "000000000000000000000000391694e7e0b0cce554cb130d723a9d27458f9298" + "0000000000000000000000000000000000000000000000000000000000000001"
+            undefined
+        > web3.sha3(key, {"encoding": "hex"})
+            "0x6661e9d6d8b923d5bbaab1b96e1dd51ff6ea2a93520fdc9eb75d059238b8c5e9"
+          ```
+    * fetch the storage
 
-Retrieving an element of the map is harder
-* The position of an element in the map is calculated with:
-
-```js
-keccak(LeftPad32(key, 0), LeftPad32(map position, 0))
-```
-
-This means to retrieve the storage on pos1["0x391694e7e0b0cce554cb130d723a9d27458f9298"] we need to calculate the position with:
-
-```js
-keccak(
-  decodeHex(
-    "000000000000000000000000391694e7e0b0cce554cb130d723a9d27458f9298" +
-      "0000000000000000000000000000000000000000000000000000000000000001"
-  )
-)
-```
-
-The geth console which comes with the web3 library can be used to make the calculation:
-
-```js
-> var key = "000000000000000000000000391694e7e0b0cce554cb130d723a9d27458f9298" + "0000000000000000000000000000000000000000000000000000000000000001"
-undefined
-> web3.sha3(key, {"encoding": "hex"})
-"0x6661e9d6d8b923d5bbaab1b96e1dd51ff6ea2a93520fdc9eb75d059238b8c5e9"
-```
-
-Now to fetch the storage:
-
-```js
-curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": ["0x295a70b2de5e3953354a6a8344e616ed314d7251", "0x6661e9d6d8b923d5bbaab1b96e1dd51ff6ea2a93520fdc9eb75d059238b8c5e9", "latest"], "id": 1}' localhost:8545
-{"jsonrpc":"2.0","id":1,"result":"0x000000000000000000000000000000000000000000000000000000000000162e"}
-```
+      ```bash
+      $curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": ["0x295a70b2de5e3953354a6a8344e616ed314d7251", "0x6661e9d6d8b923d5bbaab1b96e1dd51ff6ea2a93520fdc9eb75d059238b8c5e9", "latest"], "id": 1}' localhost:8545
+      {"jsonrpc":"2.0","id":1,"result":"0x000000000000000000000000000000000000000000000000000000000000162e"}
+      ```
 
 ### eth_getTransactionCount {#eth_gettransactioncount}
 
-Returns the number of transactions _sent_ from an address.
+* returns the number of transactions / sent -- from -- this address
 
-**Parameters**
+* **Parameters**
+  1. `DATA`
+     1. address (20 Bytes) 
+  2. `QUANTITY|TAG`
+     1. ==
+        1. integer block number OR
+        2. string -- `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"` --
+           1. [default block parameter](/developers/docs/apis/json-rpc/#default-block)
 
-1. `DATA`, 20 Bytes - address.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"`, `"pending"`, `"safe"` or `"finalized"`, see the [default block parameter](/developers/docs/apis/json-rpc/#default-block)
+  ```js
+  params: [
+    "0x407d73d8a49eeb85d32cf465507dd71d507100c1",
+    "latest", // state at the latest block
+  ]
+  ```
 
-```js
-params: [
-  "0x407d73d8a49eeb85d32cf465507dd71d507100c1",
-  "latest", // state at the latest block
-]
-```
+* **Returns**
+  * `QUANTITY`
+    * integer
+    * number of transactions / sent -- from -- this address
 
-**Returns**
+* _Example:_
 
-`QUANTITY` - integer of the number of transactions send from this address.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1","latest"],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": "0x1" // 1
-}
-```
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1","latest"],"id":1}'
+  // Result
+  {
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": "0x1" // 1
+  }
+  ```
 
 ### eth_getBlockTransactionCountByHash {#eth_getblocktransactioncountbyhash}
 
@@ -1070,36 +1087,41 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getUncleCountByBlockNumber",
 
 ### eth_getCode {#eth_getcode}
 
-Returns code at a given address.
+* returns code
+  * -- based on -- given address
 
-**Parameters**
+* **Parameters**
+  1. `DATA`
+     1. address (20 Bytes) 
+  2. `QUANTITY|TAG`
+     1. ==
+        1. integer block number OR
+        2. string -- `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"` --
+           1. [default block parameter](/developers/docs/apis/json-rpc/#default-block)
 
-1. `DATA`, 20 Bytes - address
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"`, `"pending"`, `"safe"` or `"finalized"`, see the [default block parameter](/developers/docs/apis/json-rpc/#default-block)
+  ```js
+  params: [
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "0x5daf3b", // 6139707
+  ]
+  ```
 
-```js
-params: [
-  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "0x5daf3b", // 6139707
-]
-```
+* **Returns**
+  * `DATA`
+    * code
 
-**Returns**
+* _Example:_
 
-`DATA` - the code from the given address.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "0x5daf3b"],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": "0x6060604052600436106100af576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146100b9578063095ea7b31461014757806318160ddd146101a157806323b872dd146101ca5780632e1a7d4d14610243578063313ce5671461026657806370a082311461029557806395d89b41146102e2578063a9059cbb14610370578063d0e30db0146103ca578063dd62ed3e146103d4575b6100b7610440565b005b34156100c457600080fd5b6100cc6104dd565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561010c5780820151818401526020810190506100f1565b50505050905090810190601f1680156101395780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561015257600080fd5b610187600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190505061057b565b604051808215151515815260200191505060405180910390f35b34156101ac57600080fd5b6101b461066d565b6040518082815260200191505060405180910390f35b34156101d557600080fd5b610229600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190505061068c565b604051808215151515815260200191505060405180910390f35b341561024e57600080fd5b61026460048080359060200190919050506109d9565b005b341561027157600080fd5b610279610b05565b604051808260ff1660ff16815260200191505060405180910390f35b34156102a057600080fd5b6102cc600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610b18565b6040518082815260200191505060405180910390f35b34156102ed57600080fd5b6102f5610b30565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561033557808201518184015260208101905061031a565b50505050905090810190601f1680156103625780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561037b57600080fd5b6103b0600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bce565b604051808215151515815260200191505060405180910390f35b6103d2610440565b005b34156103df57600080fd5b61042a600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610be3565b6040518082815260200191505060405180910390f35b34600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055503373ffffffffffffffffffffffffffffffffffffffff167fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c346040518082815260200191505060405180910390a2565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156105735780601f1061054857610100808354040283529160200191610573565b820191906000526020600020905b81548152906001019060200180831161055657829003601f168201915b505050505081565b600081600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60003073ffffffffffffffffffffffffffffffffffffffff1631905090565b600081600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054101515156106dc57600080fd5b3373ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16141580156107b457507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205414155b156108cf5781600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020541015151561084457600080fd5b81600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825403925050819055505b81600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254039250508190555081600360008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b80600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205410151515610a2757600080fd5b80600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825403925050819055503373ffffffffffffffffffffffffffffffffffffffff166108fc829081150290604051600060405180830381858888f193505050501515610ab457600080fd5b3373ffffffffffffffffffffffffffffffffffffffff167f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65826040518082815260200191505060405180910390a250565b600260009054906101000a900460ff1681565b60036020528060005260406000206000915090505481565b60018054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc65780601f10610b9b57610100808354040283529160200191610bc6565b820191906000526020600020905b815481529060010190602001808311610ba957829003601f168201915b505050505081565b6000610bdb33848461068c565b905092915050565b60046020528160005260406000206020528060005260406000206000915091505054815600a165627a7a72305820deb4c2ccab3c2fdca32ab3f46728389c2fe2c165d5fafa07661e4e004f6c344a0029"
-}
-```
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "0x5daf3b"],"id":1}'
+  // Result
+  {
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": "0x6060604052600436106100af576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146100b9578063095ea7b31461014757806318160ddd146101a157806323b872dd146101ca5780632e1a7d4d14610243578063313ce5671461026657806370a082311461029557806395d89b41146102e2578063a9059cbb14610370578063d0e30db0146103ca578063dd62ed3e146103d4575b6100b7610440565b005b34156100c457600080fd5b6100cc6104dd565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561010c5780820151818401526020810190506100f1565b50505050905090810190601f1680156101395780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561015257600080fd5b610187600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190505061057b565b604051808215151515815260200191505060405180910390f35b34156101ac57600080fd5b6101b461066d565b6040518082815260200191505060405180910390f35b34156101d557600080fd5b610229600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190505061068c565b604051808215151515815260200191505060405180910390f35b341561024e57600080fd5b61026460048080359060200190919050506109d9565b005b341561027157600080fd5b610279610b05565b604051808260ff1660ff16815260200191505060405180910390f35b34156102a057600080fd5b6102cc600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610b18565b6040518082815260200191505060405180910390f35b34156102ed57600080fd5b6102f5610b30565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561033557808201518184015260208101905061031a565b50505050905090810190601f1680156103625780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561037b57600080fd5b6103b0600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bce565b604051808215151515815260200191505060405180910390f35b6103d2610440565b005b34156103df57600080fd5b61042a600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610be3565b6040518082815260200191505060405180910390f35b34600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055503373ffffffffffffffffffffffffffffffffffffffff167fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c346040518082815260200191505060405180910390a2565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156105735780601f1061054857610100808354040283529160200191610573565b820191906000526020600020905b81548152906001019060200180831161055657829003601f168201915b505050505081565b600081600460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60003073ffffffffffffffffffffffffffffffffffffffff1631905090565b600081600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054101515156106dc57600080fd5b3373ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16141580156107b457507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205414155b156108cf5781600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020541015151561084457600080fd5b81600460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825403925050819055505b81600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254039250508190555081600360008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825401925050819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b80600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205410151515610a2757600080fd5b80600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825403925050819055503373ffffffffffffffffffffffffffffffffffffffff166108fc829081150290604051600060405180830381858888f193505050501515610ab457600080fd5b3373ffffffffffffffffffffffffffffffffffffffff167f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65826040518082815260200191505060405180910390a250565b600260009054906101000a900460ff1681565b60036020528060005260406000206000915090505481565b60018054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc65780601f10610b9b57610100808354040283529160200191610bc6565b820191906000526020600020905b815481529060010190602001808311610ba957829003601f168201915b505050505081565b6000610bdb33848461068c565b905092915050565b60046020528160005260406000206020528060005260406000206000915091505054815600a165627a7a72305820deb4c2ccab3c2fdca32ab3f46728389c2fe2c165d5fafa07661e4e004f6c344a0029"
+  }
+  ```
 
 ### eth_sign {#eth_sign}
 
@@ -1168,52 +1190,89 @@ curl -X POST --data '{"id": 1,"jsonrpc": "2.0","method": "eth_signTransaction","
 
 ### eth_sendTransaction {#eth_sendtransaction}
 
-Creates new message call transaction or a contract creation, if the data field contains code, and signs it using the account specified in `from`.
+* creates 
+  * NEW message call transaction OR
+    * requirements
+      * `data` has code -- TODO: ❓ --
+  * NEW contract
+    * requirements
+    * sign the transaction -- via -- the account / specified | `from`
 
-**Parameters**
+* **Parameters**
+  1. `Object`
+     * == transaction object
+     - `from`: `DATA`
+       - 20 Bytes
+       - address | transaction is sent from
+     - `to`: `DATA`
+       - 20 Bytes
+       - | create NEW contract, 
+         - OPTIONAL
+       - address | transaction is directed to
+     - `gas`: `QUANTITY` 
+       - OPTIONAL
+       - by default,
+         - 90000
+       - integer
+       - gas / provided -- for the -- transaction execution
+         * == return UNUSED gas
+     - `gasPrice`: `QUANTITY`
+       - OPTIONAL
+       - by default, To-Be-Determined
+       - integer
+       - gasPrice / used / EACH paid gas
+     - `value`: `QUANTITY`
+       - OPTIONAL
+       - integer
+       - value / sent -- with -- this transaction
+     - `input`: `DATA`
+       - ==
+         - contract's compiled code OR
+         - hash of (invoked method signature & encoded parameters)
+           * see [Ethereum Contract ABI](https://docs.soliditylang.org/en/latest/abi-spec.html)
+     - `nonce`: `QUANTITY`
+       - OPTIONAL
+       - integer
+       - allows
+         - overwrite your OWN pending transactions / use the SAME nonce
 
-1. `Object` - The transaction object
+  ```js
+  params: [
+    {
+      from: "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
+      to: "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+      gas: "0x76c0", // 30400
+      gasPrice: "0x9184e72a000", // 10000000000000
+      value: "0x9184e72a", // 2441406250
+      input:
+        "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675",
+    },
+  ]
+  ```
 
-- `from`: `DATA`, 20 Bytes - The address the transaction is sent from.
-- `to`: `DATA`, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
-- `gas`: `QUANTITY` - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
-- `gasPrice`: `QUANTITY` - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas.
-- `value`: `QUANTITY` - (optional) Integer of the value sent with this transaction.
-- `input`: `DATA` - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters.
-- `nonce`: `QUANTITY` - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+* **Returns**
+  * `DATA`
+    * 32 Bytes
+    * == 
+      * transaction hash OR
+      * zero hash
+        * if the transaction is NOT YET available
 
-```js
-params: [
+* AFTER transaction was proposed | block & you created a contract -> use [eth_getTransactionReceipt](#eth_gettransactionreceipt)
+  * Reason: 🧠get the contract address🧠 
+
+* _Example:_
+
+  ```js
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{see above}],"id":1}'
+  // Result
   {
-    from: "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
-    to: "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
-    gas: "0x76c0", // 30400
-    gasPrice: "0x9184e72a000", // 10000000000000
-    value: "0x9184e72a", // 2441406250
-    input:
-      "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675",
-  },
-]
-```
-
-**Returns**
-
-`DATA`, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
-
-Use [eth_getTransactionReceipt](#eth_gettransactionreceipt) to get the contract address, after the transaction was proposed in a block, when you created a contract.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{see above}],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331"
-}
-```
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331"
+  }
+  ```
 
 ### eth_sendRawTransaction {#eth_sendrawtransaction}
 
@@ -1250,62 +1309,93 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params"
 
 ### eth_call {#eth_call}
 
-Executes a new message call immediately without creating a transaction on the blockchain. Often used for executing read-only smart contract functions, for example the `balanceOf` for an ERC-20 contract.
+* executes a NEW message call IMMEDIATELY
+  * ⚠️WITHOUT creating a transaction | blockchain⚠️
 
-**Parameters**
+* uses
+  * execute read-only smart contract functions
+    * _Example:_ ERC-20 contract's `balanceOf` 
 
-1. `Object` - The transaction call object
+* **Parameters**
+  1. `Object`
+     * == transaction call object
+     - `from`: `DATA`
+       - 20 Bytes
+       - OPTIONAL
+       - address | transaction is sent from
+     - `to`: `DATA`
+       - 20 Bytes
+       - address | transaction is directed to
+     - `gas`: `QUANTITY` 
+       - OPTIONAL
+       - integer
+       - gas / provided -- for the -- transaction execution
+         * == ❌NOT consumed -- by -- `eth_call`❌
+     - `gasPrice`: `QUANTITY`
+       - OPTIONAL
+       - integer
+       - gasPrice / used / EACH paid gas
+     - `value`: `QUANTITY`
+       - OPTIONAL
+       - integer
+       - value / sent -- with -- this transaction
+     - `input`: `DATA`
+       - OPTIONAL
+       - hash of (method signature & encoded parameters)
+         * see [Ethereum Contract ABI](https://docs.soliditylang.org/en/latest/abi-spec.html)
+  2. `QUANTITY|TAG`
+     1. ==
+        1. integer block number OR
+        2. string -- `"latest"`, `"earliest"`, `"pending"`, `"safe"`, or `"finalized"` --
+           1. [default block parameter](/developers/docs/apis/json-rpc/#default-block)
 
-- `from`: `DATA`, 20 Bytes - (optional) The address the transaction is sent from.
-- `to`: `DATA`, 20 Bytes - The address the transaction is directed to.
-- `gas`: `QUANTITY` - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.
-- `gasPrice`: `QUANTITY` - (optional) Integer of the gasPrice used for each paid gas
-- `value`: `QUANTITY` - (optional) Integer of the value sent with this transaction
-- `input`: `DATA` - (optional) Hash of the method signature and encoded parameters. For details see [Ethereum Contract ABI in the Solidity documentation](https://docs.soliditylang.org/en/latest/abi-spec.html).
+* **Returns**
+  * `DATA`
+    * executed contract's returned value
 
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"`, `"pending"`, `"safe"` or `"finalized"`, see the [default block parameter](/developers/docs/apis/json-rpc/#default-block)
+* _Example:_
 
-**Returns**
-
-`DATA` - the return value of executed contract.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": "0x"
-}
-```
+  ```bash
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}],"id":1}'
+  // Result
+  {
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": "0x"
+  }
+  ```
 
 ### eth_estimateGas {#eth_estimategas}
 
-Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.
+* generates & returns an ESTIMATION about how much gas is necessary -- to -- complete the transaction 
+  * ⚠️!= add the transaction | the blockchain⚠️
+  * ESTIMATION == it could be > real one
+    * POSSIBLE Reasons: 🧠
+      * EVM mechanics
+      * node performance🧠
 
-**Parameters**
+* **Parameters**
+  * == [eth_call's parameters](#eth_call)
+    * ALL properties are OPTIONAL
+  * if NO gas limit is specified -> geth uses PENDING block's gas limit
 
-See [eth_call](#eth_call) parameters, except that all properties are optional. If no gas limit is specified geth uses the block gas limit from the pending block as an upper bound. As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit.
+* **Returns**
+  * `QUANTITY`
+    * == amount of gas used
 
-**Returns**
+* _Example:_
 
-`QUANTITY` - the amount of gas used.
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_estimateGas","params":[{see above}],"id":1}'
-// Result
-{
-  "id":1,
-  "jsonrpc": "2.0",
-  "result": "0x5208" // 21000
-}
-```
+  ```bash
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_estimateGas","params":[{see above}],"id":1}'
+  // Result
+  {
+    "id":1,
+    "jsonrpc": "2.0",
+    "result": "0x5208" // 21000
+  }
+  ```
 
 ### eth_getBlockByHash {#eth_getblockbyhash}
 
@@ -1529,71 +1619,107 @@ Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
 
 ### eth_getTransactionReceipt {#eth_gettransactionreceipt}
 
-Returns the receipt of a transaction by transaction hash.
+* returns -- , by transaction hash, the -- transaction's receipt  
+  * | PENDING transactions,
+    * ❌NOT available❌ 
 
-**Note** That the receipt is not available for pending transactions.
+* **Parameters**
+  1. `DATA`
+     1. 32 Bytes
+     2. transaction's hash 
 
-**Parameters**
+  ```js
+  params: ["0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5"]
+  ```
 
-1. `DATA`, 32 Bytes - hash of a transaction
+* **Returns**
+  1. `Object` 
+     - ALLOWED values
+       - transaction receipt object OR
+       - `null`
+         - == NO receipt was found
+     - `transactionHash`: `DATA`
+       - 32 Bytes
+       - transaction's hash
+     - `transactionIndex`: `QUANTITY`
+       - integer
+       - transactions index position | block
+     - `from`: `DATA`
+       - 20 Bytes
+       - sender's address
+     - `to`: `DATA`
+       - 20 Bytes
+       - | create NEW contract, 
+         - null
+       - receiver's address
+     - `gasUsed`: `QUANTITY`
+       - gas / used | this transaction
+     - `blockHash`: `DATA`
+       - 32 Bytes
+       - block's hash | transaction was in
+     - `blockNumber`: `QUANTITY`
+       - block number | this transaction was in
+     - `cumulativeGasUsed` : `QUANTITY `
+       - gas / used | this transaction was executed | block
+     - `effectiveGasPrice` : `QUANTITY`
+       - base fee + tip paid / unit of gas
+     - `contractAddress `: `DATA`
+       - 20 Bytes
+       - if the transaction == contract creation -> contract address created
+         - otherwise `null`
+     - `logs`: `Array`
+       - array of log objects / this transaction generated
+     - `logsBloom`: `DATA`
+       - 256 Bytes
+       - bloom filter -- for -- light clients
+         - Reason: 🧠quickly retrieve related logs🧠
+     - `type`: `QUANTITY`
+       - transaction type's integer 
+         - | legacy transactions,
+           - `0x0`
+         - | access list types,
+           - `0x1`
+         - | dynamic fees,
+           - `0x2`
+     - `root`: `DATA`
+       - 32 bytes
+       - post-transaction stateroot (pre Byzantium)
+     - `status`: `QUANTITY`
+       - ALLOWED values
+         - `1` (success) OR
+         - `0` (failure) 
 
-```js
-params: ["0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5"]
-```
+* _Example:_
 
-**Returns**
-`Object` - A transaction receipt object, or `null` when no receipt was found:
-
-- `transactionHash `: `DATA`, 32 Bytes - hash of the transaction.
-- `transactionIndex`: `QUANTITY` - integer of the transactions index position in the block.
-- `blockHash`: `DATA`, 32 Bytes - hash of the block where this transaction was in.
-- `blockNumber`: `QUANTITY` - block number where this transaction was in.
-- `from`: `DATA`, 20 Bytes - address of the sender.
-- `to`: `DATA`, 20 Bytes - address of the receiver. null when its a contract creation transaction.
-- `cumulativeGasUsed` : `QUANTITY ` - The total amount of gas used when this transaction was executed in the block.
-- `effectiveGasPrice` : `QUANTITY` - The sum of the base fee and tip paid per unit of gas.
-- `gasUsed `: `QUANTITY ` - The amount of gas used by this specific transaction alone.
-- `contractAddress `: `DATA`, 20 Bytes - The contract address created, if the transaction was a contract creation, otherwise `null`.
-- `logs`: `Array` - Array of log objects, which this transaction generated.
-- `logsBloom`: `DATA`, 256 Bytes - Bloom filter for light clients to quickly retrieve related logs.
-- `type`: `QUANTITY` - integer of the transaction type, `0x0` for legacy transactions, `0x1` for access list types, `0x2` for dynamic fees.
-
-It also returns _either_ :
-
-- `root` : `DATA` 32 bytes of post-transaction stateroot (pre Byzantium)
-- `status`: `QUANTITY` either `1` (success) or `0` (failure)
-
-**Example**
-
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params":["0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5"],"id":1}'
-// Result
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "blockHash":
-      "0xa957d47df264a31badc3ae823e10ac1d444b098d9b73d204c40426e57f47e8c3",
-    "blockNumber": "0xeff35f",
-    "contractAddress": null, // string of the address if it was created
-    "cumulativeGasUsed": "0xa12515",
-    "effectiveGasPrice": "0x5a9c688d4",
-    "from": "0x6221a9c005f6e47eb398fd867784cacfdcfff4e7",
-    "gasUsed": "0xb4c8",
-    "logs": [{
-      // logs as returned by getFilterLogs, etc.
-    }],
-    "logsBloom": "0x00...0", // 256 byte bloom filter
-    "status": "0x1",
-    "to": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "transactionHash":
-      "0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5",
-    "transactionIndex": "0x66",
-    "type": "0x2"
+  ```bash
+  // Request
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params":["0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5"],"id":1}'
+  // Result
+  {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "blockHash":
+        "0xa957d47df264a31badc3ae823e10ac1d444b098d9b73d204c40426e57f47e8c3",
+      "blockNumber": "0xeff35f",
+      "contractAddress": null, // string of the address if it was created
+      "cumulativeGasUsed": "0xa12515",
+      "effectiveGasPrice": "0x5a9c688d4",
+      "from": "0x6221a9c005f6e47eb398fd867784cacfdcfff4e7",
+      "gasUsed": "0xb4c8",
+      "logs": [{
+        // logs as returned by getFilterLogs, etc.
+      }],
+      "logsBloom": "0x00...0", // 256 byte bloom filter
+      "status": "0x1",
+      "to": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "transactionHash":
+        "0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5",
+      "transactionIndex": "0x66",
+      "type": "0x2"
+    }
   }
-}
-```
+  ```
 
 ### eth_getUncleByBlockHashAndIndex {#eth_getunclebyblockhashandindex}
 
