@@ -10,34 +10,50 @@ source: Ethereum on ARM
 sourceUrl: https://ethereum-on-arm-documentation.readthedocs.io/en/latest/
 ---
 
-**Ethereum on Arm is a custom Linux image that can turn a Raspberry Pi into an Ethereum node.**
-
-To use Ethereum on Arm to turn a Raspberry Pi into an Ethereum node, the following hardware is recommended:
-
-- Raspberry 4 (model B 8GB), Odroid M1 or Rock 5B (8GB/16GB RAM) board
-- MicroSD Card (16 GB Class 10 minimum)
-- 2 TB SSD minimum USB 3.0 disk or an SSD with a USB to SATA case.
-- Power supply
-- Ethernet cable
-- Port forwarding (see clients for further info)
-- A case with heatsink and fan
-- USB keyboard, Monitor and HDMI cable (micro-HDMI) (Optional)
+* Ethereum | Arm
+  * == custom Linux image / 
+    * 💡Raspberry Pi is turn -- into an -- Ethereum node💡
+  * recommended hardware
+    * single board computer
+      * Raspberry 4 (model B 8GB),
+      * Odroid M1
+      * Rock 5B (8GB/16GB RAM)
+    * single board computer's case / heatsink & fan 
+    * MicroSD Card (16 GB / Class 10+)
+    * space
+      * 2 TB SSD & USB 3.0 disk
+      * SSD / USB to SATA case
+    * Power supply
+    * Ethernet cable
+    * Port forwarding (see clients)
+    * USB keyboard, Monitor and HDMI cable (micro-HDMI)
+      * OPTIONAL
 
 ## Why run Ethereum on ARM? {#why-run-ethereum-on-arm}
 
-ARM boards are very affordable, flexible, small computers. They are good choices for running Ethereum nodes because they can be bought cheaply, configured so that all their resources focus just on the node, making them efficient, they consume low amounts of power and are physically small so they can fit unobtrusively in any home. It is also very easy to spin up nodes because the Raspberry Pi's MicroSD can simply be flashed with a prebuilt image, with no downloading or building software required.
+* TODO: ARM boards are very affordable, flexible, small computers
+* They are good choices for running Ethereum nodes because they can be bought cheaply, configured so that all their resources focus just on the node, making them efficient, they consume low amounts of power and are physically small so they can fit unobtrusively in any home
+* It is also very easy to spin up nodes because the Raspberry Pi's MicroSD can simply be flashed with a prebuilt image, with no downloading or building software required.
 
 ## How does it work? {#how-does-it-work}
 
-The Raspberry Pi's memory card is flashed with a prebuilt image. This image contains everything needed to run an Ethereum node. With a flashed card, all the user needs to do is power-on the Raspberry Pi. All the processes required to run the node are automatically started. This works because the memory card contains a Linux-based operating system (OS) on top of which system-level processes are automatically run that turn the unit into an Ethereum node.
+The Raspberry Pi's memory card is flashed with a prebuilt image
+* This image contains everything needed to run an Ethereum node
+* With a flashed card, all the user needs to do is power-on the Raspberry Pi
+* All the processes required to run the node are automatically started
+* This works because the memory card contains a Linux-based operating system (OS) on top of which system-level processes are automatically run that turn the unit into an Ethereum node.
 
-Ethereum cannot be run using the popular Raspberry Pi Linux OS "Raspbian" because Raspbian still uses a 32-bit architecture which leads Ethereum users to run into memory issues and consensus clients do not support 32-bit binaries. To overcome this, the Ethereum on Arm team migrated to a native 64-bit OS called "Armbian".
+Ethereum cannot be run using the popular Raspberry Pi Linux OS "Raspbian" because Raspbian still uses a 32-bit architecture which leads Ethereum users to run into memory issues and consensus clients do not support 32-bit binaries
+* To overcome this, the Ethereum on Arm team migrated to a native 64-bit OS called "Armbian".
 
 **Images take care of all the necessary steps**, from setting up the environment and formatting the SSD disk to installing and running the Ethereum software as well as starting the blockchain synchronization.
 
 ## Note on execution and consensus clients {#note-on-execution-and-consensus-clients}
 
-The Ethereum on Arm image includes prebuilt execution and consensus clients as services. An Ethereum node requires both clients to be synced and running. You are only required to download and flash the image and then start the services. The image is preloaded with the following execution clients:
+The Ethereum on Arm image includes prebuilt execution and consensus clients as services
+* An Ethereum node requires both clients to be synced and running
+* You are only required to download and flash the image and then start the services
+* The image is preloaded with the following execution clients:
 
 - Geth
 - Nethermind
@@ -50,7 +66,8 @@ and the following consensus clients:
 - Prysm
 - Teku
 
-You should choose one of each to run - all execution clients are compatible with all consensus clients. If you do not explicitly select a client, the node will fall back to its defaults - Geth and Lighthouse - and run them automatically when the board is powered up. You must open port 30303 on your router so Geth can find and connect to peers.
+You should choose one of each to run - all execution clients are compatible with all consensus clients
+* If you do not explicitly select a client, the node will fall back to its defaults - Geth and Lighthouse - and run them automatically when the board is powered up. You must open port 30303 on your router so Geth can find and connect to peers.
 
 ## Downloading the Image {#downloading-the-image}
 
