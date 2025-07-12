@@ -5,31 +5,66 @@ lang: en
 sidebarDepth: 2
 ---
 
-The state of Ethereum (the totality of all accounts, balances, and smart contracts), is encoded into a special version of the data structure known generally in computer science as a Merkle Tree. This structure is useful for many applications in cryptography because it creates a verifiable relationship between all the individual pieces of data entangled in the tree, resulting in a single **root** value that can be used to prove things about the data. 
+* state of Ethereum
+  * == ALL accounts + ALL balances + ALL smart contracts
+  * 💡is encoded | 'modified Merkle-Patricia Trie'💡
 
-Ethereum's data structure is a 'modified Merkle-Patricia Trie', named so because it borrows some features of PATRICIA (the Practical Algorithm To Retrieve Information Coded in Alphanumeric), and because it is designed for efficient data re**trie**val of items that comprise the Ethereum state. 
+* Merkle Tree
+  * == data structure 
+    * use
+      * cryptography applications
+        * Reason: 🧠it creates a verifiable relationship BETWEEN ALL individual pieces of data entangled | tree🧠
+          * 1! **root** value / enable to prove things about the data 
 
-A Merkle-Patricia trie is deterministic and cryptographically verifiable: The only way to generate a state root is by computing it from each individual piece of the state, and two states that are identical can be easily proven so by comparing the root hash and the hashes that led to it (_a Merkle proof_). Conversely, there is no way to create two different states with the same root hash, and any attempt to modify state with different values will result in a different state root hash. Theoretically, this structure provides the 'holy grail' of `O(log(n))` efficiency for inserts, lookups and deletes. 
+* 'modified Merkle-Patricia Trie'
+  * == 👀special version of Merkle Tree👀
+  * PATRICIA == Practical Algorithm To Retrieve Information Coded In Alphanumeric
+    * use SOME features
+  * Trie
+    * == 👀re**trie**val 👀
+      * Reason: 🧠efficient Ethereum state's items data re**trie**val🧠
+  * Merkle-Patricia
+    * deterministic 
+      * Reason: 🧠state root is ONLY generated -- by computing from -- EACH state🧠
+    * 💡cryptographically verifiable (== Merkle proof)💡
+      * if state1's root hash == state2's root hash & state1's hash / led to it == state2's hash / led to it -> BOTH states are identical
+        * == (CONVERSELY) if SAME root hash BUT DIFFERENT state's hash -> DIFFERENT states
+  * `O(log(n))` efficiency -- for -- inserts, lookups & deletes 
 
-In the near future, Ethereum plans to migrate to a [Verkle Tree](https://ethereum.org/en/roadmap/verkle-trees) structure, which will open up many new possibilities for future protocol improvements. 
+* | Ethereum's FUTURE,
+  * migrate to a [Verkle Tree](https://ethereum.org/en/roadmap/verkle-trees) structure
+    * -> NEW protocol improvements 
 
 ## Prerequisites {#prerequisites}
 
-To better understand this page, it would be helpful to have basic knowledge of [hashes](https://en.wikipedia.org/wiki/Hash_function), [Merkle trees](https://en.wikipedia.org/wiki/Merkle_tree), [tries](https://en.wikipedia.org/wiki/Trie) and [serialization](https://en.wikipedia.org/wiki/Serialization). This article begins with a description of a basic [radix tree](https://en.wikipedia.org/wiki/Radix_tree), then gradually introduces the modifications necessary for Ethereum's more optimized data structure. 
+* [hashes](https://en.wikipedia.org/wiki/Hash_function),
+* [Merkle trees](https://en.wikipedia.org/wiki/Merkle_tree),
+* [tries](https://en.wikipedia.org/wiki/Trie)
+* [serialization](https://en.wikipedia.org/wiki/Serialization)
 
 ## Basic radix tries {#basic-radix-tries}
 
-In a basic radix trie, every node looks as follows:
+* | basic radix trie,
+  * EVERY node
 
-```
-    [i_0, i_1 ... i_n, value]
-```
+    ```
+        [i_0, i_1 ... i_n, value]
+    ```
 
-Where `i_0 ... i_n` represent the symbols of the alphabet (often binary or hex), `value` is the terminal value at the node, and the values in the `i_0, i_1 ... i_n` slots are either `NULL` or pointers to (in our case, hashes of) other nodes. This forms a basic `(key, value)` store.
+* TODO: Where `i_0 ... i_n` represent the symbols of the alphabet (often binary or hex), `value` is the terminal value at the node, and the values in the `i_0, i_1 ... i_n` slots are either `NULL` or pointers to (in our case, hashes of) other nodes
+* This forms a basic `(key, value)` store.
 
-Say you wanted to use a radix tree data structure for persisting an order over a set of key value pairs. To find the value currently mapped to the key `dog` in the trie, you would first convert `dog` into letters of the alphabet (giving `64 6f 67`), and then descend the trie following that path until you find the value. That is, you start by looking up the root hash in a flat key/value DB to find the root node of the trie. It is represented as an array of keys pointing to other nodes. You would use the value at index `6` as a key and look it up in the flat key/value DB to get the node one level down. Then pick index `4` to look up the next value, then pick index `6`, and so on, until, once you followed the path: `root -> 6 -> 4 -> 6 -> 15 -> 6 -> 7`, you would look up the value of the node and return the result.
+Say you wanted to use a radix tree data structure for persisting an order over a set of key value pairs
+* To find the value currently mapped to the key `dog` in the trie, you would first convert `dog` into letters of the alphabet (giving `64 6f 67`), and then descend the trie following that path until you find the value
+* That is, you start by looking up the root hash in a flat key/value DB to find the root node of the trie
+* It is represented as an array of keys pointing to other nodes
+* You would use the value at index `6` as a key and look it up in the flat key/value DB to get the node one level down
+* Then pick index `4` to look up the next value, then pick index `6`, and so on, until, once you followed the path: `root -> 6 -> 4 -> 6 -> 15 -> 6 -> 7`, you would look up the value of the node and return the result.
 
-There is a difference between looking something up in the 'trie' and the underlying flat key/value 'DB'. They both define key/value arrangements, but the underlying DB can do a traditional 1 step lookup of a key. Looking up a key in the trie requires multiple underlying DB lookups to get to the final value described above. Let's refer to the latter as a `path` to eliminate ambiguity.
+There is a difference between looking something up in the 'trie' and the underlying flat key/value 'DB'
+* They both define key/value arrangements, but the underlying DB can do a traditional 1 step lookup of a key
+* Looking up a key in the trie requires multiple underlying DB lookups to get to the final value described above
+* Let's refer to the latter as a `path` to eliminate ambiguity.
 
 The update and delete operations for radix tries can be defined as follows:
 
@@ -189,21 +224,30 @@ Note that when updating a trie, one needs to store the key/value pair `(keccak25
 
 ## Tries in Ethereum {#tries-in-ethereum}
 
-All of the merkle tries in Ethereum's execution layer use a Merkle Patricia Trie.
+* | Ethereum's execution layer,
+  * ALL merkle tries use a Merkle Patricia Trie
 
-From a block header there are 3 roots from 3 of these tries.
-
-1.  stateRoot
-2.  transactionsRoot
-3.  receiptsRoot
+* | block header,
+  * there are 3 roots / come -- from -- 3 DIFFERENT tries
+    1.  `stateRoot`
+    2.  `transactionsRoot`
+    3.  `receiptsRoot`
 
 ### State Trie {#state-trie}
 
-There is one global state trie, and it is updated every time a client processes a block. In it, a `path` is always: `keccak256(ethereumAddress)` and a `value` is always: `rlp(ethereumAccount)`. More specifically an ethereum `account` is a 4 item array of `[nonce,balance,storageRoot,codeHash]`. At this point, it's worth noting that this `storageRoot` is the root of another patricia trie:
+* 1! global state trie
+  * | client processes a block, it's updated 
+  * `path` = `keccak256(ethereumAddress)`
+  * `value` = `rlp(ethereumAccount)`
+    * `ethereumAccount` = `[nonce,balance,storageRoot,codeHash]`
+      * `storageRoot` == ANOTHER patricia trie's root
 
 ### Storage Trie {#storage-trie}
 
-Storage trie is where _all_ contract data lives. There is a separate storage trie for each account. To retrieve values at specific storage positions at a given address the storage address, integer position of the stored data in the storage, and the block ID are required. These can then be passed as arguments to the `eth_getStorageAt` defined in the JSON-RPC API, e.g. to retrieve the data in storage slot 0 for address `0x295a70b2de5e3953354a6a8344e616ed314d7251`:
+Storage trie is where _all_ contract data lives
+* There is a separate storage trie for each account
+* To retrieve values at specific storage positions at a given address the storage address, integer position of the stored data in the storage, and the block ID are required
+* These can then be passed as arguments to the `eth_getStorageAt` defined in the JSON-RPC API, e.g. to retrieve the data in storage slot 0 for address `0x295a70b2de5e3953354a6a8344e616ed314d7251`:
 
 ```
 curl -X POST --data '{"jsonrpc":"2.0", "method": "eth_getStorageAt", "params": ["0x295a70b2de5e3953354a6a8344e616ed314d7251", "0x0", "latest"], "id": 1}' localhost:8545
