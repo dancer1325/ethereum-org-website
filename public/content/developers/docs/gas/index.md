@@ -5,28 +5,39 @@ description:
 lang: en
 ---
 
-Gas is essential to the Ethereum network. It is the fuel that allows it to operate, in the same way that a car needs gasoline to run.
+* Gas
+  * == fuel /
+    * allows making [operations](../evm/opcodes)
+    * _Example:_ == car needs gasoline
 
 ## Prerequisites {#prerequisites}
 
-To better understand this page, we recommend you first read up on [transactions](/developers/docs/transactions/) and the [EVM](/developers/docs/evm/).
+* read
+  * [transactions](/developers/docs/transactions/)
+  * [EVM](/developers/docs/evm/)
 
 ## What is gas? {#what-is-gas}
 
 Gas refers to the unit that measures the amount of computational effort required to execute specific operations on the Ethereum network.
 
-Since each Ethereum transaction requires computational resources to execute, those resources have to be paid for to ensure Ethereum is not vulnerable to spam and cannot get stuck in infinite computational loops. Payment for computation is made in the form of a gas fee.
+Since each Ethereum transaction requires computational resources to execute, those resources have to be paid for to ensure Ethereum is not vulnerable to spam and cannot get stuck in infinite computational loops
+* Payment for computation is made in the form of a gas fee.
 
-The gas fee is **the amount of gas used to do some operation, multiplied by the cost per unit gas**. The fee is paid regardless of whether a transaction succeeds or fails.
+The gas fee is **the amount of gas used to do some operation, multiplied by the cost per unit gas**
+* The fee is paid regardless of whether a transaction succeeds or fails.
 
 ![A diagram showing where gas is needed in EVM operations](./gas.png)
 _Diagram adapted from [Ethereum EVM illustrated](https://takenobu-hs.github.io/downloads/ethereum_evm_illustrated.pdf)_
 
-Gas fees have to be paid in Ethereum's native currency, ether (ETH). Gas prices are usually quoted in gwei, which is a denomination of ETH. Each gwei is equal to one-billionth of an ETH (0.000000001 ETH or 10<sup>-9</sup> ETH).
+Gas fees have to be paid in Ethereum's native currency, ether (ETH)
+* Gas prices are usually quoted in gwei, which is a denomination of ETH
+* Each gwei is equal to one-billionth of an ETH (0.000000001 ETH or 10<sup>-9</sup> ETH).
 
 For example, instead of saying that your gas costs 0.000000001 ether, you can say your gas costs 1 gwei.
 
-The word 'gwei' is a contraction of 'giga-wei', meaning 'billion wei'. One gwei is equal to one billion wei. Wei itself (named after [Wei Dai](https://wikipedia.org/wiki/Wei_Dai), creator of [b-money](https://www.investopedia.com/terms/b/bmoney.asp)) is the smallest unit of ETH.
+The word 'gwei' is a contraction of 'giga-wei', meaning 'billion wei'
+* One gwei is equal to one billion wei
+* Wei itself (named after [Wei Dai](https://wikipedia.org/wiki/Wei_Dai), creator of [b-money](https://www.investopedia.com/terms/b/bmoney.asp)) is the smallest unit of ETH.
 
 ## How are gas fees calculated? {#how-are-gas-fees-calculated}
 

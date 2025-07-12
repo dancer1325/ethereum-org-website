@@ -6,21 +6,95 @@ lang: en
 
 ## What is a blockchain? {#what-is-a-blockchain}
 
-A blockchain is a public database that is updated and shared across many computers in a network.
+* blockchain
+  * == public database /
+    * updated
+    * shared ACROSS MANY computers | network
 
-"Block" refers to data and state being stored in consecutive groups known as "blocks". If you send ETH to someone else, the transaction data needs to be added to a block to be successful.
+* "Block"
+  * == consecutive groups
+  * uses
+    * store data & state
+  * If you send ETH to someone else, the transaction data needs to be added to a block to be successful.
 
-"Chain" refers to the fact that each block cryptographically references its parent. In other words, blocks get chained together. The data in a block cannot change without changing all subsequent blocks, which would require the consensus of the entire network.
+* "Chain"
+  * == EACH block -- cryptographically references -- its parent
+  * if you change the data | block -> change ALL subsequent blocks
+    * requirements
+      * consensus of the ENTIRE network
 
-Every computer in the network must agree upon each new block and the chain as a whole. These computers are known as "nodes". Nodes ensure everyone interacting with the blockchain has the same data. To accomplish this distributed agreement, blockchains need a consensus mechanism.
+* Nodes
+  * ensure
+    * ALL / interact with the blockchain -> has the SAME data
 
-Ethereum uses a [proof-of-stake-based consensus mechanism](/developers/docs/consensus-mechanisms/pos/). Anyone who wants to add new blocks to the chain must stake ETH - the native currency in Ethereum - as collateral and run validator software. These "validators" can then be randomly selected to propose blocks that other validators check and add to the blockchain. There is a system of rewards and penalties that strongly incentivize participants to be honest and available online as much as possible.
+* [proof-of-stake-based consensus mechanism](/developers/docs/consensus-mechanisms/pos/)
+  * used by Ethereum
 
-If you would like to see how blockchain data is hashed and subsequently appended to the history of block references, be sure to check out [this demo](https://andersbrownworth.com/blockchain/blockchain) by Anders Brownworth and watch the accompanying video below.
+* validators 
+  * can
+    * propose NEW blocks | chain
+    * verify POSSIBLE NEW blocks
+  * requirements
+    * stake ETH
+    * run validator software
 
-Watch Anders explain hashes in blockchains:
-
-<YouTube id="_160oMzblY8" />
+* [Youtube video](https://www.youtube.com/watch?v=_160oMzblY8)
+  * [Hash | Sha256](https://andersbrownworth.com/blockchain/hash)
+    * inputs
+      * `data`
+        * alphanumeric
+    * output
+      * `Hash`
+        * ALWAYS SAME input's data -> SAME output's hash
+        * INDEPENDENTLY of input's size -> FIXED output's size
+  * 💡[Block](https://andersbrownworth.com/blockchain/block) 💡
+    * inputs
+      * `Block`
+        * number
+      * `Nonce`
+        * number
+      * `Data`
+    * output
+      * `Hash`
+        * 👀if it starts `0000` == signed or valid 👀
+    * "Mine" button
+      * identifies the necessary `Nonce` value / `Hash` is valid
+  * [Blockchain](https://andersbrownworth.com/blockchain/blockchain)
+    * == chain of blocks
+      * if you modify a NON FINAL block ->
+        * NEXT blocks are broken
+        * you need to mine / validate 1 by 1
+    * inputs
+      * `Block`
+        * number
+      * `Nonce`
+        * number
+      * `Data`
+        * alphanumeric
+      * `Previous`
+        * == 👀PREVIOUS block's output hash👀
+    * output
+      * `Hash`
+        * 👀if it starts `0000` == signed or valid 👀
+  * [Distributed](https://andersbrownworth.com/blockchain/distributed)
+    * SEVERAL peers of blockchain / 👀ALL peers have IDENTICAL blockchains👀
+    * 👀if you want to check if a peer is corrupted -> compare peer1's LAST block's output hash vs peer2's LAST block's output hash👀 
+  * [Tokens](https://andersbrownworth.com/blockchain/tokens)
+    * == Distributed, 
+      * EXCEPT TO
+        * `Tx` 
+          * -- replacement of --`Data`
+          * == 💡transactionS BETWEEN accounts💡== accounting book💡
+            * Problem: ⚠️NOT know if sender has ENOUGH money⚠️
+  * [Coinbase](https://andersbrownworth.com/blockchain/coinbase)
+    * == Tokens, 
+      * EXCEPT TO
+        * `Coinbase` 
+          * | mine EACH block, create token
+          * | FIRST block,
+            * create token 
+            * ❌NO `Tx`❌
+              * Reason: 🧠NOBODY had got money 🧠
 
 ## What is Ethereum? {#what-is-ethereum}
 
@@ -32,15 +106,30 @@ Requests for computation are called transaction requests; the record of all tran
 
 Cryptographic mechanisms ensure that once transactions are verified as valid and added to the blockchain, they can't be tampered with later. The same mechanisms also ensure that all transactions are signed and executed with appropriate "permissions" (no one should be able to send digital assets from Alice's account, except for Alice herself).
 
-## What is ether? {#what-is-ether}
+## What is ether (ETH)? {#what-is-ether}
 
-**Ether (ETH)** is the native cryptocurrency of Ethereum. The purpose of ETH is to allow for a market for computation. Such a market provides an economic incentive for participants to verify and execute transaction requests and provide computational resources to the network.
-
-Any participant who broadcasts a transaction request must also offer some amount of ETH to the network as a bounty. The network will burn part of the bounty and award the rest to whoever eventually does the work of verifying the transaction, executing it, committing it to the blockchain, and broadcasting it to the network.
-
-The amount of ETH paid corresponds to the resources required to do the computation. These bounties also prevent malicious participants from intentionally clogging the network by requesting the execution of infinite computation or other resource-intensive scripts, as these participants must pay for computation resources.
-
-ETH is also used to provide crypto-economic security to the network in three main ways: 1) it is used as a means to reward validators who propose blocks or call out dishonest behavior by other validators; 2) It is staked by validators, acting as collateral against dishonest behavior—if validators attempt to misbehave their ETH can be destroyed; 3) it is used to weigh 'votes' for newly proposed blocks, feeding into the fork-choice part of the consensus mechanism.
+* == Ethereum's NATIVE cryptocurrency 
+  * uses
+    * 👀computation market👀
+      * Reason:🧠economic incentive -- for -- participants -- to --
+        * verify transactions
+        * execute transaction requests🧠
+    * staked -- by -- validators
+      * 👀== if validators want to participate | network -> need to deposit 32 ETH👀
+        * if they behave
+          * honestly -> keep stake + earn rewards
+          * dishonestly -> lose stake 
+    * | propose NEW blocks,
+      * weigh 'votes'
+  * use cases
+    * 💡participant / broadcasts a transaction request -> offer ETH -- as a -- bounty💡
+      * network burn part of the bounty -- to -- award whoever 
+        * verify the transaction
+        * execute it
+        * commit it | blockchain
+        * broadcast it -- to the -- network
+      * -> prevent malicious participants -- by requesting -- execution of infinite computation
+        * Reason: 🧠participants MUST pay for computation resources🧠
 
 ## What are smart contracts? {#what-are-smart-contracts}
 
@@ -60,9 +149,12 @@ The sequence of all blocks that have been committed to the Ethereum network in t
 
 ### ETH {#eth}
 
-**Ether (ETH)** is the native cryptocurrency of Ethereum. Users pay ETH to other users to have their code execution requests fulfilled.
+* **Ether (ETH)**
+  * == Ethereum's NATIVE cryptocurrency
+  * uses
+    * users pay ETH -- , to execute code, to -- OTHER users
 
-[More on ETH](/developers/docs/intro-to-ether/)
+* [More on ETH](/developers/docs/intro-to-ether/)
 
 ### EVM {#evm}
 
@@ -78,25 +170,48 @@ The real-life machines which are storing the EVM state. Nodes communicate with e
 
 ### Accounts {#accounts}
 
-Where ETH is stored. Users can initialize accounts, deposit ETH into the accounts, and transfer ETH from their accounts to other users. Accounts and account balances are stored in a big table in the EVM; they are a part of the overall EVM state.
+* uses
+  * store ETH | account
+  * users can initialize them,
+  * transfer ETH from accounts -- to -- other users
+
+* Accounts & account balances
+  * 👀stored | EVM's big table👀
+  * == part of the EVM state
 
 [More on accounts](/developers/docs/accounts/)
 
 ### Transactions {#transactions}
 
-A "transaction request" is the formal term for a request for code execution on the EVM, and a "transaction" is a fulfilled transaction request and the associated change in the EVM state. Any user can broadcast a transaction request to the network from a node. For the transaction request to affect the agreed-upon EVM state, it must be validated, executed, and "committed to the network" by another node. Execution of any code causes a state change in the EVM; upon commitment, this state change is broadcast to all nodes in the network. Some examples of transactions:
+* "transaction request"
+  * == request for code execution | EVM
+    * -- from -- a node
+  * 👀steps to agreed | EVM state, 👀
+    * validate
+    * execute
+      * -> change state | EVM
+    * "committed to the network" -- by -- ANOTHER node 
+      * -> broadcast | ALL network's nodes 
 
-- Send X ETH from my account to Alice's account.
-- Publish some smart contract code into EVM state.
-- Execute the code of the smart contract at address X in the EVM, with arguments Y.
+* "transaction"
+  * == fulfilled transaction request + associated change | EVM state
+  * _Examples:_
+    - send X ETH from my account -- to -- Alice's account
+    - publish some smart contract code | EVM state
+    - execute the smart contract's code
+      - | EVM's address X
+      - -- with -- arguments Y
 
 [More on transactions](/developers/docs/transactions/)
 
 ### Blocks {#blocks}
 
-The volume of transactions is very high, so transactions are "committed" in batches, or blocks. Blocks generally contain dozens to hundreds of transactions.
+* Blocks
+  * == dozens OR hundreds of transactions
+    * == batches of transactions
+    * Reason: 🧠volume of transactions is very high🧠
 
-[More on blocks](/developers/docs/blocks/)
+* [More on blocks](/developers/docs/blocks/)
 
 ### Smart contracts {#smart-contracts}
 
@@ -107,10 +222,11 @@ A reusable snippet of code (a program) which a developer publishes into EVM stat
 ## Further reading {#further-reading}
 
 - [Ethereum Whitepaper](/whitepaper/)
-- [How does Ethereum work, anyway?](https://medium.com/@preethikasireddy/how-does-ethereum-work-anyway-22d1df506369) - _Preethi Kasireddy_ (**NB** this resource is still valuable but be aware that it predates [The Merge](/roadmap/merge) and therefore still refers to Ethereum's proof-of-work mechanism - Ethereum is actually now secured using [proof-of-stake](/developers/docs/consensus-mechanisms/pos))
-
-_Know of a community resource that helped you? Edit this page and add it!_
+- [How does Ethereum work, anyway?](https://medium.com/@preethikasireddy/how-does-ethereum-work-anyway-22d1df506369)
+  - ⚠️OLD resource⚠️
+    - predates [The Merge](/roadmap/merge)
+    - refers to Ethereum's proof-of-work mechanism 
 
 ## Related tutorials {#related-tutorials}
 
-- [A developer's guide to Ethereum, part 1](/developers/tutorials/a-developers-guide-to-ethereum-part-one/) _– A very beginner-friendly exploration of Ethereum using Python and web3.py_
+- [A developer's guide to Ethereum, part 1](/developers/tutorials/a-developers-guide-to-ethereum-part-one/)
