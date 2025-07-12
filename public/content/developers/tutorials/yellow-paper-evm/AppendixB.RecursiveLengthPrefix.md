@@ -26,10 +26,14 @@
       RLP(x) ≡
         Rb(x) if x ∈B     // x == byte array 
           ≡
-            x                                if ∥x∥= 1 ∧x[0] <128        ==    byte array == 1! byte   &   1! byte < 128
-            (128 + ∥x∥)·x                    else if ∥x∥<56              ==    byte array < 56 bytes  
+            x                                if ∥x∥= 1 ∧ x[0] <128        ==    byte array == 1! byte   &   1! byte < 128    
+                      == 's values [0x00, 0x7f]  (== | decimal [0, 127])
+            (128 + ∥x∥)·x                    else if ∥x∥<56              ==    byte array < 56 bytes
+                      (128 + ∥x∥)  == [0x80, 0xb7]  (== | decimal [128, 183])
             (183 + BE(∥x∥))·BE(∥x∥)·x        else if ∥x∥<2^64
-              BE(x)                          see | paper,                == minimal-length byte array | big-endian integer format == length of the input byte array ()
+                      BE(x)                          see | paper,                == minimal-length byte array | big-endian integer format == length of the input byte array ()
+                      (183 + BE(∥x∥))   ==  [0xb8, 0xbf] (== | decimal [184, 191])
+                      _Example:_ 1024 byte long string -> (\xb9\x04\x00)* string -- TODO: ❓
             ∅                                otherwise                   == ❌byte arrays / > 2^64 bytes -> can NOT be encoded❌
                                                                          ->  encoded byte array's FIRST byte < 192 -> encoded byte arrays != encodings of sequences | L (TODO: ❓)
         Rl(x) otherwise   // x == sequence of values
