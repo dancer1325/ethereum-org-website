@@ -298,7 +298,11 @@ The formal execution model of EVM code is surprisingly simple. While the Ethereu
 
 ![Ethereum apply block diagram](./ethereum-apply-block-diagram.png)
 
-The Ethereum blockchain is in many ways similar to the Bitcoin blockchain, although it does have some differences. The main difference between Ethereum and Bitcoin with regard to the blockchain architecture is that, unlike Bitcoin, Ethereum blocks contain a copy of both the transaction list and the most recent state. Aside from that, two other values, the block number and the difficulty, are also stored in the block. The basic block validation algorithm in Ethereum is as follows:
+* Ethereum blockchain vs Bitcoin blockchain
+  * Ethereum blocks 
+    * == 👀copy of the transaction list + copy of the MOST recent state👀 + block number + difficulty
+      * ❌FIRST 2, NOT stored | Bitcoin blockchain❌
+* TODO: The basic block validation algorithm in Ethereum is as follows:
 
 1. Check if the previous block referenced exists and is valid.
 2. Check that the timestamp of the block is greater than that of the referenced previous block and less than 15 minutes into the future
@@ -309,9 +313,14 @@ The Ethereum blockchain is in many ways similar to the Bitcoin blockchain, altho
 7. Let `S_FINAL` be `S[n]`, but adding the block reward paid to the miner.
 8. Check if the Merkle tree root of the state `S_FINAL` is equal to the final state root provided in the block header. If it is, the block is valid; otherwise, it is not valid.
 
-The approach may seem highly inefficient at first glance, because it needs to store the entire state with each block, but in reality efficiency should be comparable to that of Bitcoin. The reason is that the state is stored in the tree structure, and after every block only a small part of the tree needs to be changed. Thus, in general, between two adjacent blocks the vast majority of the tree should be the same, and therefore the data can be stored once and referenced twice using pointers (ie. hashes of subtrees). A special kind of tree known as a "Patricia tree" is used to accomplish this, including a modification to the Merkle tree concept that allows for nodes to be inserted and deleted, and not just changed, efficiently. Additionally, because all of the state information is part of the last block, there is no need to store the entire blockchain history - a strategy which, if it could be applied to Bitcoin, can be calculated to provide 5-20x savings in space.
+The approach may seem highly inefficient at first glance, because it needs to store the entire state with each block, but in reality efficiency should be comparable to that of Bitcoin
+* The reason is that the state is stored in the tree structure, and after every block only a small part of the tree needs to be changed
+* Thus, in general, between two adjacent blocks the vast majority of the tree should be the same, and therefore the data can be stored once and referenced twice using pointers (ie. hashes of subtrees)
+* A special kind of tree known as a "Patricia tree" is used to accomplish this, including a modification to the Merkle tree concept that allows for nodes to be inserted and deleted, and not just changed, efficiently
+* Additionally, because all of the state information is part of the last block, there is no need to store the entire blockchain history - a strategy which, if it could be applied to Bitcoin, can be calculated to provide 5-20x savings in space.
 
-A commonly asked question is "where" contract code is executed, in terms of physical hardware. This has a simple answer: the process of executing contract code is part of the definition of the state transition function, which is part of the block validation algorithm, so if a transaction is added into block `B` the code execution spawned by that transaction will be executed by all nodes, now and in the future, that download and validate block `B`.
+A commonly asked question is "where" contract code is executed, in terms of physical hardware
+* This has a simple answer: the process of executing contract code is part of the definition of the state transition function, which is part of the block validation algorithm, so if a transaction is added into block `B` the code execution spawned by that transaction will be executed by all nodes, now and in the future, that download and validate block `B`.
 
 ## Applications {#applications}
 
