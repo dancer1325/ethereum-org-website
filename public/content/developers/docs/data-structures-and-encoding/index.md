@@ -5,28 +5,45 @@ lang: en
 sidebarDepth: 2
 ---
 
-Ethereum creates, stores and transfers large volumes of data. This data must get formatted in standardized and memory-efficient ways to allow anyone to [run a node](/run-a-node/) on relatively modest consumer-grade hardware. To achieve this, several specific data structures are used on the Ethereum stack.
+* Ethereum
+  * manage (creates, stores & transfers) large volumes of data /
+    * formatted | standardized & memory-efficient ways
+      * Reason: 🧠allow anyone can [run a node](/run-a-node/) | relatively modest consumer-grade hardware🧠
+      * == use 💡data structures 💡
 
 ## Prerequisites {#prerequisites}
 
-You should understand the fundamentals of Ethereum and [client software](/developers/docs/nodes-and-clients/). Familiarity with the networking layer and [the Ethereum whitepaper](/whitepaper/) is recommended.
+* read PREVIOUSLY
+  * [networking layer](../networking-layer)
+  * [Ethereum whitepaper](/whitepaper/)
 
 ## Data structures {#data-structures}
 
 ### Patricia merkle tries {#patricia-merkle-tries}
 
-Patricia Merkle Tries are structures that encode key-value pairs into a deterministic and cryptographically authenticated trie. These are used extensively across Ethereum's execution layer.
-
-[More on Patricia Merkle Tries](/developers/docs/data-structures-and-encoding/patricia-merkle-trie)
+* Patricia Merkle Tries
+  * == structures / 
+    * key-value pairs are encoded -- into a -- trie
+      * deterministic
+      * cryptographically authenticated 
+  * uses
+    * Ethereum's execution layer
+  * [MORE](patricia-merkle-trie)
 
 ### Recursive Length Prefix {#recursive-length-prefix}
 
-Recursive Length Prefix (RLP) is a serialization method used extensively across Ethereum's execution layer.
-
-[More on RLP](/developers/docs/data-structures-and-encoding/rlp)
+* Recursive Length Prefix (RLP)
+  * == 👀serialization method👀
+  * uses
+    * Ethereum's execution layer
+  * [MORE](rlp)
 
 ### Simple Serialize {#simple-serialize}
 
-Simple Serialize (SSZ) is the dominant serialization format on Ethereum's consensus layer because of its compatibility with merklelization.
-
-[More on SSZ](/developers/docs/data-structures-and-encoding/ssz)
+* Simple Serialize (SSZ)
+  * == serialization format
+  * uses
+    * Ethereum's consensus layer
+      * MORE common one
+        * Reason: 🧠compatibile with merklelization🧠
+  * [MORE](ssz)
