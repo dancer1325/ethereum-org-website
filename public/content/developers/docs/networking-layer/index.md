@@ -5,29 +5,54 @@ lang: en
 sidebarDepth: 2
 ---
 
-Ethereum is a peer-to-peer network with thousands of nodes that must be able to communicate with one another using standardized protocols. The "networking layer" is the stack of protocols that allow those nodes to find each other and exchange information. This includes "gossiping" information (one-to-many communication) over the network as well as swapping requests and responses between specific nodes (one-to-one communication). Each node must adhere to specific networking rules to ensure they are sending and receiving the correct information.
+* goal
+  * protocols / enable communication BETWEEN nodes
 
-There are two parts to the client software (execution clients and consensus clients), each with its own distinct networking stack. As well as communicating with other Ethereum nodes, the execution and consensus clients have to communicate with each other. This page gives an introductory explanation of the protocols that enable this communication.
+* "networking layer"
+  * := stack of protocols /
+    * allow
+      * nodes 
+        * can
+          * find each other
+          * exchange information
+            * "gossiping" information
+              * == 1-to-many communication
+            * swapping requests & responses BETWEEN SPECIFIC nodes
+              * 1-to-1  
+        * must 
+          * adhere specific networking rules
+            * Reason:🧠ensure they are sending & receiving the correct information🧠
+  * of execution clients != "networking layer" of consensus clients    
 
-Execution clients gossip transactions over the execution-layer peer-to-peer network. This requires encrypted communication between authenticated peers. When a validator is selected to propose a block, transactions from the node's local transaction pool will be passed to consensus clients via a local RPC connection, which will be packaged into Beacon blocks. Consensus clients will then gossip Beacon blocks across their p2p network. This requires two separate p2p networks: one connecting execution clients for transaction gossip and one connecting consensus clients for block gossip.
+* execution clients gossip transactions -- over the -- P2P's execution-layer
+  * requirements
+    * encrypted communication BETWEEN authenticated peers
+  * | select a validator / propose a block
+    * transactions | node's local transaction pool, will be passed -- , via a local RPC connection, to -- consensus clients 
+    * transactions are packaged | Beacon blocks
 
-## Prerequisites {#prerequisites}
-
-Some knowledge of Ethereum [nodes and clients](/developers/docs/nodes-and-clients/) will be helpful for understanding this page.
+* consensus clients gossip Beacon blocks -- over -- their P2P network
+  * requirements
+    * 2 SEPARATE p2p networks
+      * == 1 connecting execution clients -- for -- transaction gossip + 1 connecting consensus clients -- for -- block gossip
 
 ## The Execution Layer {#execution-layer}
 
-The execution layer's networking protocols is divided into two stacks:
-
-- the discovery stack: built on top of UDP and allows a new node to find peers to connect to
-
-- the DevP2P stack: sits on top of TCP and enables nodes to exchange information
-
-Both stacks work in parallel. The discovery stack feeds new network participants into the network, and the DevP2P stack enables their interactions.
+* execution layer's networking protocols
+  * BOT work PARALLELY
+  * ==
+    - discovery stack
+      - built | UDP
+      - enables
+        - new node can find peers -- to -- connect to
+    - DevP2P stack
+      - built | TCP
+      - enables
+        - nodes can exchange information
 
 ### Discovery {#discovery}
 
-Discovery is the process of finding other nodes in network. This is bootstrapped using a small set of bootnodes (nodes whose addresses are [hardcoded](https://github.com/ethereum/go-ethereum/blob/master/params/bootnodes.go) into the client so they can be found immediately and connect the client to peers). These bootnodes only exist to introduce a new node to a set of peers - this is their sole purpose, they do not participate in normal client tasks like syncing the chain, and they are only used the very first time a client is spun up.
+* TODO: Discovery is the process of finding other nodes in network. This is bootstrapped using a small set of bootnodes (nodes whose addresses are [hardcoded](https://github.com/ethereum/go-ethereum/blob/master/params/bootnodes.go) into the client so they can be found immediately and connect the client to peers). These bootnodes only exist to introduce a new node to a set of peers - this is their sole purpose, they do not participate in normal client tasks like syncing the chain, and they are only used the very first time a client is spun up.
 
 The protocol used for the node-bootnode interactions is a modified form of [Kademlia](https://medium.com/coinmonks/a-brief-overview-of-kademlia-and-its-use-in-various-decentralized-platforms-da08a7f72b8f) which uses a [distributed hash table](https://en.wikipedia.org/wiki/Distributed_hash_table) to share lists of nodes. Each node has a version of this table containing the information required to connect to its closest peers. This 'closeness' is not geographical - distance is defined by the similarity of the node's ID. Each node's table is regularly refreshed as a security feature. For example, in the [Discv5](https://github.com/ethereum/devp2p/tree/master/discv5), discovery protocol nodes are also able to send 'ads' that display the subprotocols that the client supports, allowing peers to negotiate about the protocols they can both use to communicate over.
 
@@ -53,21 +78,43 @@ UDP does not support any error checking, resending of failed packets, or dynamic
 
 ### DevP2P {#devp2p}
 
-DevP2P is itself a whole stack of protocols that Ethereum implements to establish and maintain the peer-to-peer network. After new nodes enter the network, their interactions are governed by protocols in the [DevP2P](https://github.com/ethereum/devp2p) stack. These all sit on top of TCP and include the RLPx transport protocol, wire protocol and several sub-protocols. [RLPx](https://github.com/ethereum/devp2p/blob/master/rlpx.md) is the protocol governing initiating, authenticating and maintaining sessions between nodes. RLPx encodes messages using RLP (Recursive Length Prefix) which is a very space-efficient method of encoding data into a minimal structure for sending between nodes.
+* DevP2P
+  * == WHOLE stack of protocols / Ethereum implements
+    * enables
+      * 👀establish & maintain the P2P network👀
+    * included protocols
+      * TCP
+      * [RLPx](https://github.com/ethereum/devp2p/blob/master/rlpx.md)
+        * about sessions BETWEEN nodes
+          * initiate
+          * authenticate
+          * maintain
+        * encodes messages -- via -- RLP 
+      * wire protocol
+      * several sub-protocols
+  * uses
+    * | AFTER NEW nodes enter the network,
+      * node interactions are governed -- by -- [DevP2P stack's protocols](https://github.com/ethereum/devp2p) 
 
-A RLPx session between two nodes begins with an initial cryptographic handshake. This involves the node sending an auth message which is then verified by the peer. On successful verification, the peer generates an auth-acknowledgement message to return to the initiator node. This is a key-exchange process that enables the nodes to communicate privately and securely. A successful cryptographic handshake then triggers both nodes to send a "hello" message to one another "on the wire". The wire protocol is initiated by a successful exchange of hello messages.
+* RLP (Recursive Length Prefix)
+  * == method of encoding data /
+    * very space-efficient
+    * | minimal structure
+  * uses
+    * send encoded data -- BETWEEN -- nodes
 
-The hello messages contain:
+* TODO:
 
-- protocol version
-- client ID
-- port
-- node ID
-- list of supported sub-protocols
+* RLPx session BETWEEN 2 nodes
+  * initial cryptographic handshake
 
-This is the information required for a successful interaction because it defines what capabilities are shared between both nodes and configures the communication. There is a process of sub-protocol negotiation where the lists of sub-protocols supported by each node are compared and those that are common to both nodes can be used in the session.
+* There is a process of sub-protocol negotiation /
+  * lists of sub-protocols supported by each node are compared and 
+  * those that are common to both nodes can be used in the session.
 
-Along with the hello messages, the wire protocol can also send a "disconnect" message that gives warning to a peer that the connection will be closed. The wire protocol also includes PING and PONG messages that are sent periodically to keep a session open. The RLPx and wire protocol exchanges therefore establish the foundations of communication between the nodes, providing the scaffolding for useful information to be exchanged according to a specific sub-protocol.
+Along with the hello messages, the wire protocol can also send a "disconnect" message that gives warning to a peer that the connection will be closed
+* The wire protocol also includes PING and PONG messages that are sent periodically to keep a session open
+* The RLPx and wire protocol exchanges therefore establish the foundations of communication between the nodes, providing the scaffolding for useful information to be exchanged according to a specific sub-protocol.
 
 ### Sub-protocols {#sub-protocols}
 
